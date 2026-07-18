@@ -147,7 +147,8 @@
     24: 'P00',
     25: 'P00',
     26: 'P00',
-    27: 'P00'
+    27: 'P00',
+    19: 'P02',
   };
 
   // Posiciones (x,y) de las 47 mesas dentro del viewBox 0 0 480 460,
