@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Fiesta de Ex-alumnos · Colegio San Rafael 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Caveat:wght@600;700&family=Kalam:wght@400;700&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- REPRODUCTOR DE MÚSICA (sticky, arriba de todo) -->
+<div class="audio-player-container" id="audioPlayerContainer">
+  <button type="button" class="audio-toggle" id="audioToggle" aria-label="Reproducir música" aria-pressed="false">
+    <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5Z"/></svg>
+    <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+  </button>
+  <div class="audio-eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="audio-label">
+    <span class="audio-hint" id="audioHint">Toca play para escuchar</span>
+  </div>
+  <!-- Reemplaza el src por tu propio archivo de audio, ej: "assets/dj-set.mp3" -->
+  <audio id="partyAudio" preload="none" loop>
+    <source src="Amigos.mpeg" type="audio/mpeg">
+  </audio>
+</div>
+
+<div class="page">
+
+  <!-- 1. HERO -->
+  <header class="hero">
+    <div class="hero-floor" aria-hidden="true"></div>
+    <p class="hero-eyebrow">Promo 2000 presenta</p>
+    <h1>Fiesta de<br><em>Ex-alumnos</em></h1>
+    <p class="hero-college">Colegio San Rafael · 2026</p>
+
+    <div class="dj-badge">
+      <span class="eq-mini" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span class="dj-badge-text">DJ Chelo Mejía<small>En cabina toda la noche</small></span>
+    </div>
+
+    <p class="hero-perk">Incluye <strong>cena</strong> y <strong>1 cortesía</strong></p>
+
+    <div class="hero-facts">
+      <div class="hero-fact"><div class="label">Fecha</div><div class="value">17 Oct</div></div>
+      <div class="hero-fact"><div class="label">Lugar</div><div class="value">La Riviera</div></div>
+      <div class="hero-fact"><div class="label">Hora</div><div class="value">18:00</div></div>
+    </div>
+
+    <p class="hero-promo">Organiza <b>Promo 2000</b> — Anfitriones de la noche</p>
+    <div class="scroll-cue" aria-hidden="true"></div>
+  </header>
+
+  <!-- 2. BIENVENIDA -->
+  <section class="section welcome reveal">
+    <svg class="welcome-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <rect x="7" y="10" width="34" height="30" rx="6" stroke="currentColor" stroke-width="2.2"/>
+      <path d="M7 19h34" stroke="currentColor" stroke-width="2.2"/>
+      <path d="M15 6v8M33 6v8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+      <circle cx="24" cy="29" r="5.5" stroke="#ff8ae8" stroke-width="2"/>
+      <path d="M24 26v3.2l2.2 1.3" stroke="#ff8ae8" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <p>Bienvenido, exalumno del <b>Colegio San Rafael</b>. Te invitamos a revivir los mejores años, reencontrarte con tu promo y bailar hasta que se apaguen las luces.</p>
+  </section>
+
+  <div class="eq-divider" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+  <!-- 3. INFORMACIÓN CLAVE -->
+  <section class="section reveal">
+    <p class="eyebrow">Lo esencial</p>
+    <h2 class="section-title">Información <span class="accent">clave</span></h2>
+    <div class="info-grid">
+
+      <div class="info-card">
+        <svg class="info-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/><path d="M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <div class="info-title">Sábado<br>17 de Octubre</div>
+      </div>
+
+      <div class="info-card">
+        <svg class="info-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <div class="info-title">18:00 pm</div>
+      </div>
+
+      <a class="info-card link" href="https://www.google.com/maps/search/?api=1&query=La+Riviera+Cochabamba" target="_blank" rel="noopener">
+        <svg class="info-icon" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.6 7-11.7A7 7 0 1 0 5 9.3C5 14.4 12 21 12 21Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9.3" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+        <div class="info-title">La Riviera</div>
+        <div class="info-hint">Cochabamba · Ver mapa</div>
+      </a>
+
+      <div class="info-card">
+        <svg class="info-icon" viewBox="0 0 24 24" fill="none"><path d="M7 3h10l-1 6a4 4 0 0 1-8 0L7 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 13v6M8 21h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <div class="info-title">1 Cortesía</div>
+      </div>
+
+      <div class="info-card">
+        <svg class="info-icon" viewBox="0 0 24 24" fill="none"><path d="M9 3h6l1 4-4 3-4-3 1-4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 10v11M7 21h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <div class="info-title">Dress code</div>
+        <div class="info-hint">Formal</div>
+      </div>
+
+      <div class="info-card">
+        <svg class="info-icon" viewBox="0 0 24 24" fill="none"><path d="M3 11v2l3 1v5a1 1 0 0 0 1 1h1v-5.4l4 1.4v4h1a1 1 0 0 0 1-1v-5l7-2.3V9L3 11Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <div class="info-title">Promo 2000</div>
+        <div class="info-hint">Anfitriones</div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="eq-divider" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+  <!-- 4. MURO DE RECUERDOS -->
+  <section class="section reveal">
+    <p class="eyebrow">Antes del muro</p>
+    <h2 class="section-title">Muro de <span class="accent">recuerdos</span></h2>
+    <p class="section-sub">Toca la tarjeta de Promo 2000 para ver el collage completo. Fotos de época de cada promoción, sube las tuyas y forma parte del muro.</p>
+
+    <button type="button" class="featured-card" id="mosaicMain" aria-haspopup="dialog">
+      <div class="featured-photo"><span aria-hidden="true">2000</span></div>
+      <div class="featured-tag">Anfitriones</div>
+      <div class="featured-body">
+        <h3>Promo 2000</h3>
+        <p>Foto grupal de época · toca para ver el collage</p>
+      </div>
+    </button>
+
+    <button type="button" class="upload-btn" id="btnSubirRecuerdo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      Sube recuerdos de tu promo (foto/video)
+    </button>
+    <input type="file" id="inputRecuerdo" class="visually-hidden-input" accept="image/*,video/*">
+
+    <p class="promos-label">Otras promos</p>
+    <div class="promos-grid" id="promosGrid">
+      <div class="promo-tile"><span>1975</span></div>
+      <div class="promo-tile"><span>1999</span></div>
+      <div class="promo-tile"><span>2002</span></div>
+      <div class="promo-tile"><span>1998</span></div>
+      <div class="promo-tile"><span>2003</span></div>
+      <div class="promo-tile"><span>1997</span></div>
+    </div>
+  </section>
+
+  <div class="eq-divider" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+  <!-- 5. PROGRAMA DE MOMENTOS -->
+  <section class="section reveal">
+    <p class="eyebrow">Itinerario oficial</p>
+    <h2 class="section-title">Programa de <span class="accent">momentos</span></h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-time">18:00 – 20:00 · Recepción</div>
+        <div class="timeline-desc">Entrega de cortesías y manillas, toma de fotos por promos.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-time">20:00 – 22:00 · Cena</div>
+        <div class="timeline-desc">Cena servida en mesas por promo.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-time">22:00 – 00:00 · Fiesta con DJ</div>
+        <div class="timeline-desc">Pista abierta con DJ Chelo Mejía al mando de la cabina.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-time">00:00 · Medianoche</div>
+        <div class="timeline-desc">Brindis y entrega de la fiesta a la siguiente promoción.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="eq-divider" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+  <!-- 6. FORMULARIO DE RESERVAS -->
+  <section class="section reveal">
+    <p class="eyebrow">Último paso</p>
+    <h2 class="section-title">Confirma tu <span class="accent">reserva y mesa</span></h2>
+    <p class="section-sub">Toca una mesa libre en el croquis para elegirla. Las mesas en amarillo ya están reservadas por otras promos.</p>
+
+    <div class="map-wrap">
+      <svg id="croquis" viewBox="0 0 480 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Croquis del salón La Riviera con 47 mesas">
+        <!-- zonas fijas -->
+        <rect class="zone" x="10" y="10" width="70" height="70" rx="6"/>
+        <text class="zone-text" x="45" y="42" text-anchor="middle"><tspan x="45" dy="0">SALIDA</tspan><tspan x="45" dy="12">CICLOVÍA</tspan></text>
+
+        <rect class="zone" x="85" y="10" width="255" height="45" rx="6"/>
+        <text class="zone-text" x="212" y="36" text-anchor="middle">ÁREA VERDE</text>
+
+        <rect class="zone" x="360" y="10" width="110" height="45" rx="6"/>
+        <text class="zone-text" x="415" y="36" text-anchor="middle">COCINA</text>
+
+        <rect class="zone" x="10" y="110" width="70" height="35" rx="6"/>
+        <text class="zone-text" x="45" y="124" text-anchor="middle"><tspan x="45" dy="0">BAÑO</tspan><tspan x="45" dy="11">VARONES</tspan></text>
+
+        <rect class="zone dim" x="10" y="150" width="55" height="215" rx="6"/>
+        <text class="zone-text vertical" x="37" y="257" text-anchor="middle" transform="rotate(-90 37 257)">ESCENARIO</text>
+
+        <rect class="zone dim" x="70" y="150" width="15" height="215" rx="3"/>
+
+        <rect class="zone pista" x="90" y="150" width="160" height="215" rx="8"/>
+        <text class="zone-text" x="170" y="254" text-anchor="middle"><tspan x="170" dy="0">PISTA DE</tspan><tspan x="170" dy="13">BAILE</tspan></text>
+
+        <rect class="zone" x="10" y="385" width="70" height="35" rx="6"/>
+        <text class="zone-text" x="45" y="399" text-anchor="middle"><tspan x="45" dy="0">BAÑO</tspan><tspan x="45" dy="11">MUJERES</tspan></text>
+
+        <text class="zone-text small" x="150" y="440" text-anchor="middle">SALIDA</text>
+        <text class="zone-text small" x="330" y="440" text-anchor="middle">ENTRADA</text>
+
+        <!-- las 47 mesas se generan dinámicamente desde script.js -->
+        <g id="tablesLayer"></g>
+      </svg>
+      <div class="map-legend">
+        <span><i class="legend-dot"></i> Libre</span>
+        <span><i class="legend-dot res"></i> Reservada</span>
+        <span><i class="legend-dot sel"></i> Tu mesa</span>
+      </div>
+    </div>
+
+    <form id="reservaForm">
+      <div class="field">
+        <label for="nombre">Nombre completo</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Ej: María Fernanda Rojas" required>
+      </div>
+      <div class="field">
+        <label for="whatsapp">Número de celular / WhatsApp</label>
+        <input type="tel" id="whatsapp" name="whatsapp" placeholder="Ej: 700 00000" required>
+      </div>
+      <div class="field">
+        <label for="promo">¿De qué promo eres?</label>
+        <select id="promo" name="promo" required>
+          <option value="" disabled selected>Selecciona tu promoción</option>
+          <option>Promo 1976</option>
+          <option>Promo 1977</option>
+          <option>Promo 1978</option>
+          <option>Promo 1979</option>
+          <option>Promo 1980</option>
+          <option>Promo 1981</option>
+          <option>Promo 1981</option>
+          <option>Otra</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="mesaSeleccionada">¿Qué mesa deseas reservar?</label>
+        <input type="text" id="mesaSeleccionada" name="mesa" placeholder="Toca una mesa libre en el croquis" readonly required>
+      </div>
+
+      <div class="qr-box">
+        <p class="eyebrow" style="justify-content:center;">Pago</p>
+        <div class="qr-fake">
+          <img src="qr-pago-bcp.png" alt="Código QR de pago BCP a nombre de Hinojosa Montano Pamela Paola">
+        </div>
+        <p>Escanea el QR para pagar tu entrada, luego sube tu comprobante.</p>
+        <button type="button" class="upload-btn blue" id="btnSubirComprobante">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+          Subir comprobante de pago (QR)
+        </button>
+        <input type="file" id="inputComprobante" class="visually-hidden-input" accept="image/*">
+        <div class="file-preview" id="previewComprobante">
+          <img id="previewComprobanteImg" alt="">
+          <span id="previewComprobanteName"></span>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">Confirmar reserva y pago</button>
+      <p class="confirm-msg" id="confirmMsg">✔ ¡Reserva recibida! Te contactaremos por WhatsApp para confirmar tu mesa y pago.</p>
+    </form>
+  </section>
+
+  <div class="eq-divider" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+  <!-- 7. EL SLAM DEL SAN RAFAEL -->
+  <section class="section reveal">
+    <p class="eyebrow">Antes de irte</p>
+    <h2 class="section-title">El Slam del <span class="accent">San Rafael</span> 📖</h2>
+    <p class="section-sub">Deja tu firma y tu recuerdo favorito, como en el anuario.</p>
+
+    <form class="slam-form" id="slamForm">
+      <div class="field">
+        <label for="apodo">Apodo</label>
+        <input type="text" id="apodo" placeholder="Ej: El Flaco Torrez" required>
+      </div>
+      <div class="field" style="margin-bottom:8px;">
+        <label for="recuerdo">Recuerdo favorito</label>
+        <input type="text" id="recuerdo" placeholder="Ej: Las tardes de fulbito en el patio" required>
+      </div>
+      <button type="submit" class="slam-btn">Firmar el Slam</button>
+    </form>
+
+    <div class="signatures" id="signaturesList">
+      <div class="signature-card">
+        <p class="nick font-a">— La Colo Vargas</p>
+        <p class="memory font-b">Los ensayos de la kermés hasta que se iba la luz. ¡Nunca lo olvido!</p>
+      </div>
+      <div class="signature-card">
+        <p class="nick font-c">— Pato Salazar</p>
+        <p class="memory font-a">El profe de física corriendo al bus para no perder la excursión 😂</p>
+      </div>
+      <div class="signature-card">
+        <p class="nick font-b">— Any Rocabado</p>
+        <p class="memory font-c">Los recreos eternos jugando quemados en la cancha grande.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. FOOTER -->
+  <footer class="footer">
+    <div class="footer-logos">
+      <div class="foot-logo">Colegio<br>San Rafael</div>
+      <div class="foot-logo">Promo<br>2000</div>
+    </div>
+    <div class="whatsapp-block">
+      <svg class="whatsapp-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.2.2-.3.2-.5.1-.2-.1-1-.4-1.9-1.2-.7-.6-1.2-1.4-1.3-1.6-.1-.2 0-.4.1-.5.1-.1.2-.3.4-.4.1-.2.2-.3.2-.5.1-.2 0-.4 0-.5 0-.1-.6-1.4-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2s1 2.6 1.1 2.7c.1.2 1.9 3 4.7 4.1.7.3 1.2.4 1.6.5.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2-.1-.1-.2-.2-.4-.3Z"/></svg>
+      <div class="whatsapp-numbers">
+        <a href="tel:79733732">797 33732</a>
+        <a href="tel:70727990">707 27990</a>
+        <a href="tel:71724563">717 24563</a>
+      </div>
+    </div>
+    <p class="footer-credit">Fiesta de Ex-alumnos · Colegio San Rafael · 2026</p>
+  </footer>
+
+</div>
+
+<!-- MODAL COLLAGE (Muro de Recuerdos - Promo 2000) -->
+<div class="modal-overlay" id="collageModal" role="dialog" aria-modal="true" aria-labelledby="collageTitle" hidden>
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h3 id="collageTitle">Promo 2000 · Álbum completo</h3>
+      <button type="button" class="modal-close" id="collageClose" aria-label="Cerrar collage">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="collage-grid">
+      <div class="collage-item big"><span>Foto grupal<br>graduación</span></div>
+      <div class="collage-item"><span>Kermés<br>2000</span></div>
+      <div class="collage-item tall"><span>Viaje de<br>promoción</span></div>
+      <div class="collage-item"><span>Última<br>campanada</span></div>
+      <div class="collage-item"><span>Equipo de<br>fútbol</span></div>
+      <div class="collage-item wide"><span>Fiesta de<br>graduación</span></div>
+      <div class="collage-item"><span>Patio del<br>colegio</span></div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
