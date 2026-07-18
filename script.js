@@ -24,7 +24,7 @@
   const iconPlay = audioToggle.querySelector('.icon-play');
   const iconPause = audioToggle.querySelector('.icon-pause');
 
-  // Autoplay queda explícitamente desactivado: el audio solo suena si el usuario toca el botón.
+  // Autoplay queda explícitamente desactivado
   partyAudio.autoplay = false;
 
   function setPlayingUI(isPlaying){
@@ -83,11 +83,9 @@
   mosaicMain.addEventListener('click', openCollageModal);
   collageClose.addEventListener('click', closeCollageModal);
 
-  // cerrar al hacer click fuera del panel (en el overlay)
   collageModal.addEventListener('click', (e)=>{
     if(e.target === collageModal) closeCollageModal();
   });
-  // cerrar con tecla Escape
   document.addEventListener('keydown', (e)=>{
     if(e.key === 'Escape' && !collageModal.hidden) closeCollageModal();
   });
@@ -131,41 +129,19 @@
   /* =========================================================
      3. CROQUIS DE 47 MESAS - salón La Riviera
      ========================================================= */
-
-  // Mesas reservadas según el croquis oficial: número -> promo asignada
   const reservedMap = {
-    6:  'P94',
-    8:  'P87',
-    17: 'P87',
-    9:  'P91',
-    10: 'P99',
-    12: 'P99',
-    13: 'P99',
-    11: 'P76',
-    14: 'P97',
-    23: 'P97',
-    24: 'P00',
-    25: 'P00',
-    26: 'P00',
-    27: 'P00',
-    19: 'P02',
+    6:  'P94', 8:  'P87', 17: 'P87', 9:  'P91', 10: 'P99',
+    12: 'P99', 13: 'P99', 11: 'P76', 14: 'P97', 23: 'P97',
+    24: 'P00', 25: 'P00', 26: 'P00', 27: 'P00', 19: 'P02',
   };
 
-  // Posiciones (x,y) de las 47 mesas dentro del viewBox 0 0 480 460,
-  // distribuidas alrededor de la pista de baile y el escenario, igual que el croquis oficial.
   const tablePositions = {
-    // fila superior junto a Área Verde
     28:[97,80], 29:[131,80], 30:[183,80], 31:[217,80], 32:[282,80], 33:[316,80],
-    // fila reservada junto a Baño Varones (Promo 2000)
     27:[129,132], 26:[163,132], 25:[197,132], 24:[231,132],
-    // columna izquierda junto a la pista (14 arriba -> 6 abajo)
     14:[261,176], 13:[261,199], 12:[261,222], 11:[261,245], 10:[261,268], 9:[261,291], 8:[261,314], 7:[261,337], 6:[261,360],
-    // columna derecha junto a la pista (23 arriba -> 15 abajo)
     23:[309,176], 22:[309,199], 21:[309,222], 20:[309,245], 19:[309,268], 18:[309,291], 17:[309,314], 16:[309,337], 15:[309,360],
-    // bloque circular junto a la cocina, dos columnas
     34:[390,130], 35:[390,165], 36:[390,200], 37:[390,235], 38:[390,270], 39:[390,305], 40:[390,340],
     41:[440,130], 42:[440,165], 43:[440,200], 44:[440,235], 45:[440,270], 46:[440,305], 47:[440,340],
-    // fila inferior junto a Baño Mujeres / entrada
     1:[140,400], 2:[175,400], 3:[210,400], 4:[245,400], 5:[280,400]
   };
 
@@ -188,9 +164,7 @@
     g.setAttribute('tabindex', isReserved ? '-1' : '0');
     g.setAttribute('role', 'button');
     g.setAttribute('aria-disabled', isReserved ? 'true' : 'false');
-    g.setAttribute('aria-label', isReserved
-      ? ('Mesa ' + num + ', reservada por ' + reservedMap[num])
-      : ('Mesa ' + num + ', libre'));
+    g.setAttribute('aria-label', isReserved ? ('Mesa ' + num + ', reservada por ' + reservedMap[num]) : ('Mesa ' + num + ', libre'));
 
     const circle = document.createElementNS(SVG_NS, 'circle');
     circle.setAttribute('class', 'seat-fill');
@@ -218,12 +192,11 @@
         if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); selectTable(); }
       });
     }
-
     tablesLayer.appendChild(g);
   });
 
   /* =========================================================
-     COMPROBANTE DE PAGO (QR)
+     4. COMPROBANTE DE PAGO (QR) - VISTA PREVIA LOCAL
      ========================================================= */
   const btnComprobante = document.getElementById('btnSubirComprobante');
   const inputComprobante = document.getElementById('inputComprobante');
@@ -231,128 +204,138 @@
   const previewComprobanteImg = document.getElementById('previewComprobanteImg');
   const previewComprobanteName = document.getElementById('previewComprobanteName');
 
-  btnComprobante.addEventListener('click', ()=> inputComprobante.click());
-  inputComprobante.addEventListener('change', (e)=>{
-    const file = e.target.files[0];
-    if(!file) return;
-    const url = URL.createObjectURL(file);
-    previewComprobanteImg.src = url;
-    previewComprobanteName.textContent = file.name;
-    previewComprobante.classList.add('show');
-  });
+  if (btnComprobante && inputComprobante) {
+    btnComprobante.addEventListener('click', ()=> inputComprobante.click());
+    
+    inputComprobante.addEventListener('change', (e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      previewComprobanteName.textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        previewComprobanteImg.src = event.target.result;
+        previewComprobante.style.display = 'flex'; // Asegura compatibilidad visual
+        previewComprobante.classList.add('show');
+      };
+      reader.readAsDataURL(file);
+    });
+  }
 
   /* =========================================================
-     FORMULARIO DE RESERVA
+     5. MANEJO DINÁMICO DE SELECCIÓN DE PROMOCIÓN ("OTRA")
      ========================================================= */
-  const reservaForm = document.getElementById('reservaForm');
-  const confirmMsg = document.getElementById('confirmMsg');
+  const selectPromo = document.getElementById('promo');
+  const otraPromoContainer = document.getElementById('otraPromoContainer');
+  const otraPromoInput = document.getElementById('otraPromoInput');
 
-  reservaForm.addEventListener('submit', (e)=>{
-    e.preventDefault();
-    if(!mesaInput.value){
-      mesaInput.focus();
-      mesaInput.placeholder = 'Selecciona una mesa libre en el croquis';
-      return;
-    }
-    confirmMsg.classList.add('show');
-    confirmMsg.scrollIntoView({behavior:'smooth', block:'center'});
-  });
-
-  document.addEventListener('DOMContentLoaded', () => {
-  const reservaForm = document.getElementById('reservaForm');
-  const btnSubir = document.getElementById('btnSubirComprobante');
-  const inputComprobante = document.getElementById('inputComprobante');
-  const previewContainer = document.getElementById('previewComprobante');
-  const previewImg = document.getElementById('previewComprobanteImg');
-  const previewName = document.getElementById('previewComprobanteName');
-
-  // 1. Lógica visual para la miniatura del comprobante (se queda por si quieren ver la foto antes de ir a WhatsApp)
-  if (btnSubir && inputComprobante) {
-    btnSubir.addEventListener('click', () => inputComprobante.click());
-
-    inputComprobante.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        previewName.textContent = file.name;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          previewImg.src = event.target.result;
-          previewContainer.style.display = 'flex';
-        };
-        reader.readAsDataURL(file);
+  if (selectPromo && otraPromoContainer && otraPromoInput) {
+    selectPromo.addEventListener('change', (e) => {
+      if (e.target.value === "Otra") {
+        otraPromoContainer.style.display = 'block';
+        otraPromoInput.required = true;
+        otraPromoInput.focus();
+      } else {
+        otraPromoContainer.style.display = 'none';
+        otraPromoInput.required = false;
+        otraPromoInput.value = "";
       }
     });
   }
 
-  // 2. Redirección directa a WhatsApp con los datos del formulario
-  if (reservaForm) {
-    reservaForm.addEventListener('submit', (e) => {
-      e.preventDefault(); // Evita que la página intente recargarse
+  /* =========================================================
+     6. FORMULARIO DE RESERVA - ENVÍO ALEATORIO A WHATSAPP
+     ========================================================= */
+  const reservaForm = document.getElementById('reservaForm');
+  const confirmMsg = document.getElementById('confirmMsg');
 
-      // Capturamos los valores ingresados por el usuario
+  if (reservaForm) {
+    reservaForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      
+      // Validación preventiva por si no marcaron croquis
+      if(!mesaInput.value){
+        mesaInput.focus();
+        mesaInput.placeholder = 'Selecciona una mesa libre en el croquis';
+        return;
+      }
+
+      // Captura de datos
       const nombre = document.getElementById('nombre').value.trim();
       const whatsappUsuario = document.getElementById('whatsapp').value.trim();
-      const promo = document.getElementById('promo').value;
-      const mesa = document.getElementById('mesaSeleccionada').value.trim();
+      const mesa = mesaInput.value.trim();
 
-      // Número de teléfono del anfitrión que recibirá las reservas 
-      // (Usa el formato internacional sin el signo '+'. Ejemplo para Bolivia: 591XXXXXXXX)
-      const TELEFONO_ANFITRION = "59179733732"; 
+      // Definición de promoción elegida
+      let promoSeleccionada = selectPromo.value;
+      if (promoSeleccionada === "Otra") {
+        promoSeleccionada = otraPromoInput.value.trim();
+      }
 
-      // Armamos el texto del mensaje bien ordenado y con emojis para que se vea genial
+      // --- TRUCO DE ROTACIÓN ALEATORIA ENTRE 3 NÚMEROS ---
+      const numerosOrganizadores = [
+        "59179733732",
+        "59170727990",
+        "59171724563"
+      ];
+      const indiceAleatorio = Math.floor(Math.random() * numerosOrganizadores.length);
+      const TELEFONO_ANFITRION = numerosOrganizadores[indiceAleatorio];
+
+      // Formato estético del texto para enviar
       const textoMensaje = 
 `¡Hola! Acabo de realizar mi reserva desde la página web. Aquí tienes mis datos:
 
 👤 *Nombre:* ${nombre}
 📱 *Celular:* ${whatsappUsuario}
-🎓 *Promoción:* ${promo}
+🎓 *Promoción:* ${promoSeleccionada}
 🪑 *Mesa seleccionada:* ${mesa}
 
 _(A continuación adjunto mi comprobante de pago de la entrada)_`;
 
-      // Codificamos el texto para que sea válido dentro de una URL
       const mensajeCodificado = encodeURIComponent(textoMensaje);
-
-      // Creamos el enlace directo a la API de WhatsApp (funciona en PC y celulares)
       const urlWhatsApp = `https://api.whatsapp.com/send?phone=${TELEFONO_ANFITRION}&text=${mensajeCodificado}`;
 
-      // Abrimos WhatsApp en una nueva pestaña
+      // Mostrar mensaje visual de éxito en la interfaz y abrir la pestaña
+      confirmMsg.classList.add('show');
+      if(confirmMsg.scrollIntoView) {
+        confirmMsg.scrollIntoView({behavior:'smooth', block:'center'});
+      }
+      
       window.open(urlWhatsApp, '_blank');
     });
   }
-});
 
   /* =========================================================
-     SLAM DEL SAN RAFAEL (firmas dinámicas)
+     7. SLAM DEL SAN RAFAEL (firmas dinámicas)
      ========================================================= */
   const slamForm = document.getElementById('slamForm');
   const signaturesList = document.getElementById('signaturesList');
   const fontClasses = ['font-a','font-b','font-c'];
 
-  slamForm.addEventListener('submit', (e)=>{
-    e.preventDefault();
-    const apodo = document.getElementById('apodo').value.trim();
-    const recuerdo = document.getElementById('recuerdo').value.trim();
-    if(!apodo || !recuerdo) return;
+  if (slamForm) {
+    slamForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const apodo = document.getElementById('apodo').value.trim();
+      const recuerdo = document.getElementById('recuerdo').value.trim();
+      if(!apodo || !recuerdo) return;
 
-    const card = document.createElement('div');
-    card.className = 'signature-card';
-    const fa = fontClasses[Math.floor(Math.random()*fontClasses.length)];
-    const fb = fontClasses[Math.floor(Math.random()*fontClasses.length)];
+      const card = document.createElement('div');
+      card.className = 'signature-card';
+      const fa = fontClasses[Math.floor(Math.random()*fontClasses.length)];
+      const fb = fontClasses[Math.floor(Math.random()*fontClasses.length)];
 
-    const nick = document.createElement('p');
-    nick.className = 'nick ' + fa;
-    nick.textContent = '— ' + apodo;
+      const nick = document.createElement('p');
+      nick.className = 'nick ' + fa;
+      nick.textContent = '— ' + apodo;
 
-    const memory = document.createElement('p');
-    memory.className = 'memory ' + fb;
-    memory.textContent = recuerdo;
+      const memory = document.createElement('p');
+      memory.className = 'memory ' + fb;
+      memory.textContent = recuerdo;
 
-    card.appendChild(nick);
-    card.appendChild(memory);
-    signaturesList.insertBefore(card, signaturesList.firstChild);
+      card.appendChild(nick);
+      card.appendChild(memory);
+      signaturesList.insertBefore(card, signaturesList.firstChild);
 
-    slamForm.reset();
-  });
+      slamForm.reset();
+    });
+  }
 
 })();
