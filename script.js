@@ -255,7 +255,7 @@
       // Validación preventiva por si no marcaron croquis
       if(!mesaInput.value){
         mesaInput.focus();
-        mesaInput.placeholder = 'Selecciona una mesa libre en el croquis';
+        mesaInput.placeholder = 'Sel||ecciona una mesa libre en el croquis';
         return;
       }
 
@@ -270,14 +270,20 @@
         promoSeleccionada = otraPromoInput.value.trim();
       }
 
-      // --- TRUCO DE ROTACIÓN ALEATORIA ENTRE 3 NÚMEROS ---
+      // --- SISTEMA DE ROTACIÓN ALEATORIA CON 2 NÚMEROS ---
       const numerosOrganizadores = [
-        "59170727990",
-        "59171724563",
-        "59179733732"
+        "59179733732", // Organizador 1
+        "59171724563"  // Organizador 2
       ];
-      const indiceAleatorio = Math.floor(Math.random() * numerosOrganizadores.length);
+      
+      // Genera un índice entero estricto: 0 o 1
+      const totalNumeros = numerosOrganizadores.length;
+      const indiceAleatorio = Math.floor(Math.random() * totalNumeros);
       const TELEFONO_ANFITRION = numerosOrganizadores[indiceAleatorio];
+      
+      // Control en consola para tus pruebas
+      console.log("Índice elegido:", indiceAleatorio, "-> Redirigiendo al número:", TELEFONO_ANFITRION);
+      // ----------------------------------------------------
 
       // Formato estético del texto para enviar
       const textoMensaje = 
