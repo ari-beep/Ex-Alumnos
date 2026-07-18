@@ -272,9 +272,9 @@
 
       // --- TRUCO DE ROTACIÓN ALEATORIA ENTRE 3 NÚMEROS ---
       const numerosOrganizadores = [
-        "59179733732",
         "59170727990",
-        "59171724563"
+        "59171724563",
+        "59179733732"
       ];
       const indiceAleatorio = Math.floor(Math.random() * numerosOrganizadores.length);
       const TELEFONO_ANFITRION = numerosOrganizadores[indiceAleatorio];
