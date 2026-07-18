@@ -257,6 +257,70 @@
     confirmMsg.scrollIntoView({behavior:'smooth', block:'center'});
   });
 
+  document.addEventListener('DOMContentLoaded', () => {
+  const reservaForm = document.getElementById('reservaForm');
+  const btnSubir = document.getElementById('btnSubirComprobante');
+  const inputComprobante = document.getElementById('inputComprobante');
+  const previewContainer = document.getElementById('previewComprobante');
+  const previewImg = document.getElementById('previewComprobanteImg');
+  const previewName = document.getElementById('previewComprobanteName');
+
+  // 1. Lógica visual para la miniatura del comprobante (se queda por si quieren ver la foto antes de ir a WhatsApp)
+  if (btnSubir && inputComprobante) {
+    btnSubir.addEventListener('click', () => inputComprobante.click());
+
+    inputComprobante.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        previewName.textContent = file.name;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          previewImg.src = event.target.result;
+          previewContainer.style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  // 2. Redirección directa a WhatsApp con los datos del formulario
+  if (reservaForm) {
+    reservaForm.addEventListener('submit', (e) => {
+      e.preventDefault(); // Evita que la página intente recargarse
+
+      // Capturamos los valores ingresados por el usuario
+      const nombre = document.getElementById('nombre').value.trim();
+      const whatsappUsuario = document.getElementById('whatsapp').value.trim();
+      const promo = document.getElementById('promo').value;
+      const mesa = document.getElementById('mesaSeleccionada').value.trim();
+
+      // Número de teléfono del anfitrión que recibirá las reservas 
+      // (Usa el formato internacional sin el signo '+'. Ejemplo para Bolivia: 591XXXXXXXX)
+      const TELEFONO_ANFITRION = "59179733732"; 
+
+      // Armamos el texto del mensaje bien ordenado y con emojis para que se vea genial
+      const textoMensaje = 
+`¡Hola! Acabo de realizar mi reserva desde la página web. Aquí tienes mis datos:
+
+👤 *Nombre:* ${nombre}
+📱 *Celular:* ${whatsappUsuario}
+🎓 *Promoción:* ${promo}
+🪑 *Mesa seleccionada:* ${mesa}
+
+_(A continuación adjunto mi comprobante de pago de la entrada)_`;
+
+      // Codificamos el texto para que sea válido dentro de una URL
+      const mensajeCodificado = encodeURIComponent(textoMensaje);
+
+      // Creamos el enlace directo a la API de WhatsApp (funciona en PC y celulares)
+      const urlWhatsApp = `https://api.whatsapp.com/send?phone=${TELEFONO_ANFITRION}&text=${mensajeCodificado}`;
+
+      // Abrimos WhatsApp en una nueva pestaña
+      window.open(urlWhatsApp, '_blank');
+    });
+  }
+});
+
   /* =========================================================
      SLAM DEL SAN RAFAEL (firmas dinámicas)
      ========================================================= */

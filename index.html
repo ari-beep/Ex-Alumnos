@@ -220,7 +220,7 @@
       </div>
     </div>
 
-    <form id="reservaForm">
+    <form id="reservaForm" enctype="multipart/form-data">
       <div class="field">
         <label for="nombre">Nombre completo</label>
         <input type="text" id="nombre" name="nombre" placeholder="Ej: María Fernanda Rojas" required>
@@ -258,7 +258,7 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
           Subir comprobante de pago (QR)
         </button>
-        <input type="file" id="inputComprobante" class="visually-hidden-input" accept="image/*">
+        <input type="file" id="inputComprobante" name="comprobante" class="visually-hidden-input" accept="image/*">
         <div class="file-preview" id="previewComprobante">
           <img id="previewComprobanteImg" alt="">
           <span id="previewComprobanteName"></span>
