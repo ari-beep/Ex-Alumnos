@@ -2,6 +2,53 @@
   "use strict";
 
   /* =========================================================
+     SOBRE VIRTUAL DE INTRODUCCIÓN
+     ---------------------------------------------------------
+     1. Solapa se abre (rotateX) → 2. la tarjeta sale deslizándose
+     hacia arriba → 3. todo el sobre se desvanece y libera el scroll.
+     ========================================================= */
+  (function initEnvelopeIntro(){
+    const intro = document.getElementById('envelopeIntro');
+    if(!intro) return;
+
+    const stage = document.getElementById('envelopeStage');
+    const cta = document.getElementById('envelopeCta');
+    const flap = document.getElementById('envelopeFlap');
+    const card = document.getElementById('envelopeCard');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let opened = false;
+
+    document.body.classList.add('intro-lock');
+
+    function finalizar(){
+      intro.hidden = true;
+      document.body.classList.remove('intro-lock');
+    }
+
+    function abrirSobre(){
+      if(opened) return;
+      opened = true;
+      intro.classList.add('opening'); // oculta el botón/CTA
+
+      if(reduceMotion){
+        finalizar();
+        return;
+      }
+
+      flap.classList.add('flap-open');           // 1. abre la solapa
+      setTimeout(()=> card.classList.add('card-open'), 550);   // 2. sale la tarjeta
+      setTimeout(()=> intro.classList.add('fade-out'), 550 + 750); // 3. se desvanece
+      setTimeout(finalizar, 550 + 750 + 550);     // 4. libera el scroll
+    }
+
+    stage.addEventListener('click', abrirSobre);
+    cta.addEventListener('click', abrirSobre);
+    stage.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); abrirSobre(); }
+    });
+  })();
+
+  /* =========================================================
      0. GOOGLE DRIVE (Google Apps Script Web App)
      ---------------------------------------------------------
      1. Despliega el archivo Code.gs que te entregamos como

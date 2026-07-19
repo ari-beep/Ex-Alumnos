@@ -989,3 +989,161 @@ input,select,textarea{font-family:inherit;}
   border-bottom:1px dotted var(--ink-faint);
 }
 .footer-credit{margin-top:26px;font-size:10.5px;color:var(--ink-faint);}
+
+/* ---------- SOBRE VIRTUAL DE INTRODUCCIÓN ---------- */
+body.intro-lock{overflow:hidden;height:100vh;}
+
+.envelope-intro{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:34px;
+  padding:24px;
+  background:
+    radial-gradient(ellipse at 20% 15%, rgba(255,46,203,.28), transparent 55%),
+    radial-gradient(ellipse at 82% 20%, rgba(32,230,255,.26), transparent 55%),
+    radial-gradient(ellipse at 50% 100%, rgba(255,46,203,.16), transparent 60%),
+    #05040f;
+  transition:opacity .55s ease;
+}
+.envelope-intro[hidden]{display:none;}
+.envelope-intro.fade-out{opacity:0;pointer-events:none;}
+
+.envelope-stage{
+  position:relative;
+  width:min(78vw, 300px);
+  height:min(52vw, 200px);
+  cursor:pointer;
+  perspective:900px;
+}
+.envelope-stage:focus-visible{outline:2px solid var(--blue);outline-offset:6px;border-radius:14px;}
+
+.envelope{
+  position:relative;
+  width:100%;
+  height:100%;
+}
+
+/* la "tarjeta" que vive dentro del sobre y sale deslizándose hacia arriba */
+.envelope-card{
+  position:absolute;
+  inset:6px 5%;
+  z-index:1;
+  border-radius:14px;
+  background:linear-gradient(160deg,#1b1450,#0c0e28);
+  border:1.5px solid var(--pink);
+  box-shadow:0 0 26px rgba(255,46,203,.4);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:14px;
+  transform:translateY(0);
+  opacity:1;
+  transition:transform .8s cubic-bezier(.2,.8,.2,1), box-shadow .8s ease;
+}
+.envelope-card.card-open{
+  transform:translateY(-190%) scale(1.04);
+  box-shadow:0 0 40px rgba(255,46,203,.6);
+}
+.envelope-card-eyebrow{
+  margin:0 0 4px;
+  font-family:var(--font-display);
+  font-size:10px;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--blue-soft);
+}
+.envelope-card-title{
+  margin:0 0 6px;
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:19px;
+  color:var(--ink);
+  text-shadow:0 0 16px rgba(255,46,203,.5);
+}
+.envelope-card-sub{
+  margin:0;
+  font-size:11.5px;
+  line-height:1.4;
+  color:var(--ink-dim);
+}
+
+/* el cuerpo/bolsillo inferior del sobre, fijo, no se mueve */
+.envelope-pocket{
+  position:absolute;
+  left:0;right:0;bottom:0;
+  height:64%;
+  z-index:2;
+  background:linear-gradient(160deg,#12153c,#080a20);
+  border:1.5px solid var(--blue);
+  border-radius:0 0 16px 16px;
+  box-shadow:0 0 24px rgba(32,230,255,.35), inset 0 0 24px rgba(255,46,203,.08);
+}
+
+/* la solapa de arriba: se abre girando hacia atrás sobre su borde superior */
+.envelope-flap{
+  position:absolute;
+  top:0;left:0;
+  width:100%;
+  height:60%;
+  z-index:3;
+  clip-path:polygon(0 0, 100% 0, 50% 100%);
+  background:linear-gradient(165deg,#241a5c,#12163f);
+  border-top:1.5px solid var(--pink);
+  filter:drop-shadow(0 6px 14px rgba(255,46,203,.45));
+  transform-origin:top center;
+  transform:rotateX(0deg);
+  transition:transform .7s cubic-bezier(.32,.72,.28,1), filter .7s ease;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+}
+.envelope-flap.flap-open{
+  transform:rotateX(-165deg);
+  filter:drop-shadow(0 2px 6px rgba(255,46,203,.15));
+}
+.envelope-seal{
+  margin-top:14%;
+  width:34px;height:34px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,46,203,.35), rgba(15,19,56,.9));
+  border:1px solid var(--pink-soft);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+  box-shadow:0 0 16px rgba(255,46,203,.6);
+}
+
+.envelope-cta{
+  border:none;
+  border-radius:999px;
+  padding:14px 26px;
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:13.5px;
+  letter-spacing:.03em;
+  color:#050110;
+  background:linear-gradient(90deg,var(--pink),var(--blue));
+  box-shadow:0 0 30px rgba(255,46,203,.4);
+  animation:envelopePulse 1.8s ease-in-out infinite;
+  transition:opacity .3s, transform .3s;
+}
+.envelope-intro.opening .envelope-cta{
+  opacity:0;
+  transform:translateY(8px);
+  pointer-events:none;
+}
+@keyframes envelopePulse{
+  0%, 100%{transform:scale(1);box-shadow:0 0 24px rgba(255,46,203,.35);}
+  50%{transform:scale(1.045);box-shadow:0 0 38px rgba(255,46,203,.55);}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .envelope-cta{animation:none;}
+  .envelope-flap, .envelope-card{transition-duration:.01ms;}
+}
