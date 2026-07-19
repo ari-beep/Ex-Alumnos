@@ -441,9 +441,16 @@ input,select,textarea{font-family:inherit;}
   background:
     repeating-linear-gradient(135deg, rgba(255,46,203,.35) 0 2px, transparent 2px 12px),
     linear-gradient(135deg,#2a0f3c,#0c1a4a);
+  background-size:cover;
+  background-position:center;
   display:flex;align-items:center;justify-content:center;
   position:relative;
 }
+.featured-photo.has-cover{
+  background-size:cover;
+  background-position:center;
+}
+.featured-photo.has-cover span{opacity:0;}
 .featured-photo span{
   font-family:var(--font-display);
   font-size:38px;
@@ -451,6 +458,7 @@ input,select,textarea{font-family:inherit;}
   color:rgba(255,255,255,.85);
   letter-spacing:.02em;
   text-shadow:0 0 20px rgba(0,0,0,.4);
+  transition:opacity .2s;
 }
 .featured-tag{
   position:absolute;top:10px;left:10px;
@@ -550,6 +558,16 @@ input,select,textarea{font-family:inherit;}
   background:linear-gradient(135deg, rgba(32,230,255,.08), rgba(255,46,203,.08));
 }
 .promo-tile span{position:relative;z-index:1;}
+.promo-tile.has-cover{
+  background-size:cover;
+  background-position:center;
+}
+.promo-tile.has-cover span{
+  text-shadow:0 1px 4px rgba(0,0,0,.9);
+}
+.promo-tile.has-cover.promo-tile--docentes span:first-child{
+  text-shadow:0 1px 6px rgba(0,0,0,.95);
+}
 .promo-tile.new-upload{
   border-color:var(--pink);
   box-shadow:0 0 0 1px var(--pink), 0 0 16px rgba(255,46,203,.4);
@@ -708,6 +726,18 @@ input,select,textarea{font-family:inherit;}
   color:var(--ink-dim);
   margin-bottom:6px;
 }
+.field-warning{
+  display:none;
+  font-size:12px;
+  color:var(--pink-soft);
+  background:rgba(255,46,203,.1);
+  border:1px solid rgba(255,46,203,.35);
+  border-radius:10px;
+  padding:10px 12px;
+  margin:10px 0 0;
+  line-height:1.4;
+}
+.field-warning.show{display:block;}
 .field input, .field select{
   width:100%;
   background:var(--panel);

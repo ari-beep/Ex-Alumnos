@@ -146,7 +146,6 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
       Sube recuerdos de tu promo (foto/video)
     </button>
-    <input type="file" id="inputRecuerdo" class="visually-hidden-input" accept="image/*,video/*">
 
     <p class="promos-label">Otras promos</p>
     <div class="promos-grid" id="promosGrid">
@@ -163,7 +162,7 @@
       <button type="button" class="promo-tile" data-code="1997" data-label="Promo 1997" aria-haspopup="dialog"><span>1997</span></button>
 
       <button type="button" class="promo-tile promo-tile--add" id="addPromoTile" aria-haspopup="dialog">
-        <span class="promo-tile-caption">+ ¿Tu promo no está?<br>Selecciona tu promo</span>
+        <span class="promo-tile-caption">+ ¿Tu promo no está?<br>Créala aquí</span>
       </button>
 
     </div>
@@ -375,6 +374,7 @@
       </button>
     </div>
     <form id="addPromoForm">
+      <p class="section-sub" style="margin-bottom:16px;">Usa esto solo si tu promoción todavía no aparece en la lista. Si ya existe, ciérralo y usa el botón rosa "Sube recuerdos de tu promo".</p>
       <div class="field">
         <label for="newPromoInput">Escribe o selecciona tu promoción</label>
         <input type="text" id="newPromoInput" list="promoSuggestions" placeholder="Ej: Promo 1985" required>
@@ -387,6 +387,7 @@
           <option value="Promo 2002"></option>
           <option value="Promo 2003"></option>
         </datalist>
+        <p class="field-warning" id="addPromoWarning"></p>
       </div>
 
       <button type="button" class="upload-btn blue" id="btnNewPromoFile">
@@ -400,6 +401,39 @@
       </div>
 
       <button type="submit" class="submit-btn" style="margin-top:16px;">Crear espacio de mi promo</button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: subir un recuerdo eligiendo su carpeta/promo destino -->
+<div class="modal-overlay" id="uploadModal" role="dialog" aria-modal="true" aria-labelledby="uploadModalTitle" hidden>
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h3 id="uploadModalTitle">Sube tus recuerdos</h3>
+      <button type="button" class="modal-close" id="uploadModalClose" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <form id="uploadForm">
+      <div class="field">
+        <label for="uploadPromoSelect">¿A qué promo pertenece esta foto o video?</label>
+        <select id="uploadPromoSelect">
+          <option value="General">General (no pertenece a una promo)</option>
+          <!-- el resto de las opciones se genera dinámicamente en script.js -->
+        </select>
+      </div>
+
+      <button type="button" class="upload-btn" id="btnElegirArchivoSubida">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        Seleccionar foto/video
+      </button>
+      <input type="file" id="inputArchivoSubida" class="visually-hidden-input" accept="image/*,video/*">
+      <div class="file-preview" id="previewArchivoSubida">
+        <img id="previewArchivoSubidaImg" alt="">
+        <span id="previewArchivoSubidaName"></span>
+      </div>
+
+      <button type="submit" class="submit-btn" style="margin-top:16px;">Subir recuerdo</button>
     </form>
   </div>
 </div>

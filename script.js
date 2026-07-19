@@ -285,23 +285,121 @@
       openCollageModal({ code: el.getAttribute('data-code'), label: el.getAttribute('data-label') });
     });
   }
-  document.querySelectorAll('[data-code]').forEach(activarMosaico);
+
+  // Busca la primera foto real disponible en Drive para esa promo y la usa
+  // como fondo de portada, reemplazando el patrón de rayas diagonales.
+  async function aplicarPortadaAutomatica_(el){
+    const code = el && el.getAttribute('data-code');
+    if(!code || el.dataset.portadaCargada) return;
+    el.dataset.portadaCargada = '1';
+
+    const visualEl = el.classList.contains('featured-card')
+      ? el.querySelector('.featured-photo')
+      : el;
+    if(!visualEl) return;
+
+    const files = await fetchDrivePhotos_(code);
+    const foto = (files || []).find(f =>
+      !/video/i.test(f.mimeType || '') && !/\.(mp4|mov|webm)$/i.test(f.name || '')
+    );
+    if(!foto) return;
+
+    const url = toDriveThumbnailUrl_(foto.url);
+    visualEl.style.backgroundImage =
+      "linear-gradient(180deg, rgba(5,5,16,.15), rgba(5,5,16,.82)), url('" + url.replace(/'/g, '%27') + "')";
+    visualEl.classList.add('has-cover');
+  }
+
+  document.querySelectorAll('[data-code]').forEach(el=>{
+    activarMosaico(el);
+    aplicarPortadaAutomatica_(el);
+  });
 
   /* =========================================================
-     MURO DE RECUERDOS: subir foto/video (vista previa local)
+     MURO DE RECUERDOS: subir foto/video, eligiendo la carpeta
      ========================================================= */
   const btnSubirRecuerdo = document.getElementById('btnSubirRecuerdo');
-  const inputRecuerdo = document.getElementById('inputRecuerdo');
   const promosGrid = document.getElementById('promosGrid');
 
-  btnSubirRecuerdo.addEventListener('click', ()=> inputRecuerdo.click());
+  const uploadModal = document.getElementById('uploadModal');
+  const uploadModalClose = document.getElementById('uploadModalClose');
+  const uploadForm = document.getElementById('uploadForm');
+  const uploadPromoSelect = document.getElementById('uploadPromoSelect');
+  const btnElegirArchivoSubida = document.getElementById('btnElegirArchivoSubida');
+  const inputArchivoSubida = document.getElementById('inputArchivoSubida');
+  const previewArchivoSubida = document.getElementById('previewArchivoSubida');
+  const previewArchivoSubidaImg = document.getElementById('previewArchivoSubidaImg');
+  const previewArchivoSubidaName = document.getElementById('previewArchivoSubidaName');
+  let archivoSeleccionadoSubida = null;
+  let uploadModalLastFocused = null;
 
-  inputRecuerdo.addEventListener('change', (e)=>{
+  // Rellena el <select> con "General" + todas las promociones que ya existen
+  // en el muro (incluida la anfitriona), para que el usuario elija la carpeta exacta.
+  function poblarSelectPromos_(){
+    uploadPromoSelect.innerHTML = '';
+    const general = document.createElement('option');
+    general.value = 'General';
+    general.textContent = 'General (no pertenece a una promo)';
+    uploadPromoSelect.appendChild(general);
+
+    document.querySelectorAll('[data-code]').forEach(el=>{
+      const code = el.getAttribute('data-code');
+      const label = el.getAttribute('data-label') || ('Promo ' + code);
+      if(!code || code === 'General') return;
+      const opt = document.createElement('option');
+      opt.value = code;
+      opt.textContent = label;
+      uploadPromoSelect.appendChild(opt);
+    });
+  }
+
+  function openUploadModal(){
+    poblarSelectPromos_();
+    uploadModalLastFocused = document.activeElement;
+    uploadModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    uploadPromoSelect.focus();
+  }
+  function closeUploadModal(){
+    uploadModal.hidden = true;
+    document.body.style.overflow = '';
+    if(uploadModalLastFocused) uploadModalLastFocused.focus();
+  }
+
+  btnSubirRecuerdo.addEventListener('click', openUploadModal);
+  uploadModalClose.addEventListener('click', closeUploadModal);
+  uploadModal.addEventListener('click', (e)=>{
+    if(e.target === uploadModal) closeUploadModal();
+  });
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && !uploadModal.hidden) closeUploadModal();
+  });
+
+  btnElegirArchivoSubida.addEventListener('click', ()=> inputArchivoSubida.click());
+  inputArchivoSubida.addEventListener('change', (e)=>{
     const file = e.target.files[0];
     if(!file) return;
+    archivoSeleccionadoSubida = file;
+    if(file.type.startsWith('image/')){
+      previewArchivoSubidaImg.src = URL.createObjectURL(file);
+      previewArchivoSubidaImg.hidden = false;
+    } else {
+      previewArchivoSubidaImg.hidden = true;
+    }
+    previewArchivoSubidaName.textContent = file.name;
+    previewArchivoSubida.classList.add('show');
+  });
+
+  uploadForm.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    if(!archivoSeleccionadoSubida) return;
+
+    const file = archivoSeleccionadoSubida;
+    const code = uploadPromoSelect.value || 'General';
+
+    // Vista previa local inmediata (mientras se sube a Drive en segundo plano).
     const tile = document.createElement('div');
     tile.className = 'promo-tile new-upload';
-
     if(file.type.startsWith('image/')){
       const url = URL.createObjectURL(file);
       const img = document.createElement('img');
@@ -314,16 +412,26 @@
       span.style.fontSize = '22px';
       tile.appendChild(span);
     }
-    const label = document.createElement('div');
-    label.className = 'upload-label';
-    label.textContent = 'Nuevo';
-    tile.appendChild(label);
-
+    const labelTag = document.createElement('div');
+    labelTag.className = 'upload-label';
+    labelTag.textContent = 'Nuevo';
+    tile.appendChild(labelTag);
     promosGrid.appendChild(tile);
-    inputRecuerdo.value = '';
 
-    // Persistencia en segundo plano (si Drive está configurado); no bloquea la UI.
-    uploadToDrive_(file, 'General');
+    closeUploadModal();
+    uploadForm.reset();
+    previewArchivoSubida.classList.remove('show');
+    archivoSeleccionadoSubida = null;
+
+    // Persistencia en Drive, dentro de la carpeta elegida.
+    await uploadToDrive_(file, code);
+
+    // Refresca la portada de esa promo con la foto recién subida.
+    const destino = document.querySelector('[data-code="' + CSS.escape(code) + '"]');
+    if(destino){
+      delete destino.dataset.portadaCargada;
+      aplicarPortadaAutomatica_(destino);
+    }
   });
 
   /* =========================================================
@@ -334,6 +442,7 @@
   const addPromoClose = document.getElementById('addPromoClose');
   const addPromoForm = document.getElementById('addPromoForm');
   const newPromoInput = document.getElementById('newPromoInput');
+  const addPromoWarning = document.getElementById('addPromoWarning');
   const btnNewPromoFile = document.getElementById('btnNewPromoFile');
   const inputNewPromoFile = document.getElementById('inputNewPromoFile');
   const previewNewPromoFile = document.getElementById('previewNewPromoFile');
@@ -357,12 +466,14 @@
     tile.setAttribute('aria-haspopup', 'dialog');
     tile.innerHTML = '<span>' + code + '</span>';
     activarMosaico(tile);
+    aplicarPortadaAutomatica_(tile);
     promosGrid.insertBefore(tile, addPromoTile);
     return tile;
   }
 
   function openAddPromoModal(){
     addPromoLastFocused = document.activeElement;
+    addPromoWarning.classList.remove('show');
     addPromoModal.hidden = false;
     document.body.style.overflow = 'hidden';
     newPromoInput.focus();
@@ -372,6 +483,8 @@
     document.body.style.overflow = '';
     if(addPromoLastFocused) addPromoLastFocused.focus();
   }
+
+  newPromoInput.addEventListener('input', ()=> addPromoWarning.classList.remove('show'));
 
   addPromoTile.addEventListener('click', openAddPromoModal);
   addPromoClose.addEventListener('click', closeAddPromoModal);
@@ -403,12 +516,21 @@
     if(!label) return;
     const code = codigoDesdeLabel_(label);
 
-    // Evita duplicar una promo que ya existe en la cuadrícula.
-    const yaExiste = promosGrid.querySelector('[data-code="' + CSS.escape(code) + '"]');
-    const tile = yaExiste || crearTilePromo_(code, label);
+    // Este botón es EXCLUSIVO para promociones que todavía no existen.
+    // Si ya existe, no se sube nada aquí: se guía al usuario al botón principal.
+    const yaExiste = document.querySelector('[data-code="' + CSS.escape(code) + '"]');
+    if(yaExiste){
+      addPromoWarning.textContent = 'Esa promoción ya existe en el muro. Usa el botón rosa "Sube recuerdos de tu promo" y selecciónala en la lista.';
+      addPromoWarning.classList.add('show');
+      return;
+    }
+
+    const tile = crearTilePromo_(code, label);
 
     if(newPromoFileSeleccionado){
       await uploadToDrive_(newPromoFileSeleccionado, code);
+      delete tile.dataset.portadaCargada;
+      aplicarPortadaAutomatica_(tile);
     }
 
     closeAddPromoModal();
