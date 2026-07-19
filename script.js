@@ -162,23 +162,23 @@
   const collageClose = document.getElementById('collageClose');
   let lastFocusedEl = null;
 
-  // Captions genéricas de respaldo para armar el collage asimétrico
-  // mientras no haya fotos reales subidas a Drive para esa promoción.
+  // Captions genéricas de respaldo, con alturas variadas para simular el
+  // efecto masonry mientras no haya fotos reales subidas a Drive.
   const COLLAGE_PLACEHOLDERS = [
-    { text:'Foto grupal<br>graduación', size:'big' },
-    { text:'Kermés', size:'' },
-    { text:'Viaje de<br>promoción', size:'tall' },
-    { text:'Última<br>campanada', size:'' },
-    { text:'Equipo de<br>fútbol', size:'' },
-    { text:'Fiesta de<br>graduación', size:'wide' },
-    { text:'Patio del<br>colegio', size:'' }
+    { text:'Foto grupal<br>graduación', h:'lg' },
+    { text:'Kermés', h:'sm' },
+    { text:'Viaje de<br>promoción', h:'md' },
+    { text:'Última<br>campanada', h:'sm' },
+    { text:'Equipo de<br>fútbol', h:'lg' },
+    { text:'Fiesta de<br>graduación', h:'md' },
+    { text:'Patio del<br>colegio', h:'sm' }
   ];
 
   function renderPlaceholderCollage_(label){
     collageGrid.innerHTML = '';
     COLLAGE_PLACEHOLDERS.forEach(item=>{
       const cell = document.createElement('div');
-      cell.className = 'collage-item' + (item.size ? (' ' + item.size) : '');
+      cell.className = 'collage-item placeholder h-' + item.h;
       const span = document.createElement('span');
       span.innerHTML = item.text + '<br>' + label;
       cell.appendChild(span);
@@ -206,27 +206,35 @@
     const id = driveIdDesdeUrl_(url);
     return id ? ('https://drive.google.com/thumbnail?id=' + id + '&sz=w1000') : url;
   }
+  // Versión en alta resolución para el lightbox (más grande que la miniatura del grid).
+  function toDriveFullUrl_(url){
+    const id = driveIdDesdeUrl_(url);
+    return id ? ('https://drive.google.com/thumbnail?id=' + id + '&sz=w1600') : url;
+  }
   function toDriveUcUrl_(url){
     const id = driveIdDesdeUrl_(url);
     return id ? ('https://drive.google.com/uc?export=view&id=' + id) : url;
   }
 
+  // Cuadrícula tipo Pinterest: cada imagen conserva su proporción original
+  // (nada de object-fit:cover que recorte) y se acomoda con CSS columns.
   function renderRealCollage_(files){
     collageGrid.innerHTML = '';
-    files.forEach((file, i)=>{
+    files.forEach((file)=>{
       const cell = document.createElement('div');
-      cell.className = 'collage-item' + (i === 0 ? ' big' : (i === 2 ? ' tall' : (i === 5 ? ' wide' : '')));
       const isVideo = /video/i.test(file.mimeType || '') || /\.(mp4|mov|webm)$/i.test(file.name || '');
+
       if(isVideo){
+        cell.className = 'collage-item is-video';
         const span = document.createElement('span');
         span.innerHTML = '🎬<br>' + (file.name || 'Video');
         cell.appendChild(span);
       } else {
+        cell.className = 'collage-item has-photo';
         const img = document.createElement('img');
         img.src = toDriveThumbnailUrl_(file.url); // formato confiable para <img>
         img.alt = file.name || 'Recuerdo';
         img.loading = 'lazy';
-        img.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;inset:0;';
         // Si el thumbnail falla, probamos con "uc?export=view"; si también
         // falla, mostramos un aviso en vez del ícono roto con el nombre del archivo.
         img.addEventListener('error', function onErr(){
@@ -235,12 +243,16 @@
             img.src = toDriveUcUrl_(file.url);
           } else {
             img.removeEventListener('error', onErr);
+            cell.classList.remove('has-photo');
+            cell.classList.add('placeholder');
             img.remove();
             const span = document.createElement('span');
             span.innerHTML = '🖼️<br>No se pudo cargar<br>' + (file.name || '');
             cell.appendChild(span);
           }
         });
+        // Vista de cerca: al tocar la foto se abre el lightbox en grande.
+        cell.addEventListener('click', ()=> openLightbox(toDriveFullUrl_(file.url), img.alt));
         cell.appendChild(img);
       }
       collageGrid.appendChild(cell);
@@ -276,6 +288,36 @@
   document.addEventListener('keydown', (e)=>{
     if(e.key === 'Escape' && !collageModal.hidden) closeCollageModal();
   });
+
+  /* =========================================================
+     2c. LIGHTBOX - vista de cerca a pantalla completa
+     ========================================================= */
+  const lightboxModal = document.getElementById('lightboxModal');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxClose = document.getElementById('lightboxClose');
+  let lightboxLastFocused = null;
+
+  function openLightbox(url, alt){
+    lightboxImg.src = url;
+    lightboxImg.alt = alt || 'Foto en grande';
+    lightboxLastFocused = document.activeElement;
+    lightboxModal.hidden = false;
+    lightboxClose.focus();
+  }
+  function closeLightbox(){
+    lightboxModal.hidden = true;
+    lightboxImg.src = '';
+    if(lightboxLastFocused) lightboxLastFocused.focus();
+  }
+
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightboxModal.addEventListener('click', (e)=>{
+    if(e.target === lightboxModal) closeLightbox();
+  });
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && !lightboxModal.hidden) closeLightbox();
+  });
+
 
   // Conecta cualquier mosaico existente (tarjeta destacada + cuadrícula) al modal.
   function activarMosaico(el){

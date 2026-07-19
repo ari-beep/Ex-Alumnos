@@ -352,15 +352,19 @@
         <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
       </button>
     </div>
-    <div class="collage-grid" id="collageGrid">
-      <div class="collage-item big"><span>Foto grupal<br>graduación</span></div>
-      <div class="collage-item"><span>Kermés<br>2000</span></div>
-      <div class="collage-item tall"><span>Viaje de<br>promoción</span></div>
-      <div class="collage-item"><span>Última<br>campanada</span></div>
-      <div class="collage-item"><span>Equipo de<br>fútbol</span></div>
-      <div class="collage-item wide"><span>Fiesta de<br>graduación</span></div>
-      <div class="collage-item"><span>Patio del<br>colegio</span></div>
+    <div class="collage-scroll">
+      <div class="collage-grid" id="collageGrid"><!-- se rellena dinámicamente en script.js --></div>
     </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX: vista de cerca a pantalla completa de una foto del collage -->
+<div class="modal-overlay lightbox-overlay" id="lightboxModal" role="dialog" aria-modal="true" aria-label="Foto en grande" hidden>
+  <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Cerrar vista de cerca">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
+  </button>
+  <div class="lightbox-img-wrap">
+    <img id="lightboxImg" src="" alt="">
   </div>
 </div>
 
