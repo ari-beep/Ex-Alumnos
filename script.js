@@ -186,6 +186,31 @@
     });
   }
 
+  // Convierte cualquier link de Google Drive (visor, "uc?export=view", etc.)
+  // en el enlace de miniatura, que es el que Google sirve de forma confiable
+  // dentro de una etiqueta <img>. Si no reconoce el formato, lo deja igual.
+  function driveIdDesdeUrl_(url){
+    if(!url) return null;
+    const patrones = [
+      /\/file\/d\/([a-zA-Z0-9_-]{10,})/,  // .../file/d/ID/view
+      /[?&]id=([a-zA-Z0-9_-]{10,})/,       // .../uc?export=view&id=ID  ó  thumbnail?id=ID
+      /\/d\/([a-zA-Z0-9_-]{10,})/          // https://lh3.googleusercontent.com/d/ID
+    ];
+    for(const re of patrones){
+      const m = url.match(re);
+      if(m && m[1]) return m[1];
+    }
+    return null;
+  }
+  function toDriveThumbnailUrl_(url){
+    const id = driveIdDesdeUrl_(url);
+    return id ? ('https://drive.google.com/thumbnail?id=' + id + '&sz=w1000') : url;
+  }
+  function toDriveUcUrl_(url){
+    const id = driveIdDesdeUrl_(url);
+    return id ? ('https://drive.google.com/uc?export=view&id=' + id) : url;
+  }
+
   function renderRealCollage_(files){
     collageGrid.innerHTML = '';
     files.forEach((file, i)=>{
@@ -198,9 +223,24 @@
         cell.appendChild(span);
       } else {
         const img = document.createElement('img');
-        img.src = file.url;
+        img.src = toDriveThumbnailUrl_(file.url); // formato confiable para <img>
         img.alt = file.name || 'Recuerdo';
+        img.loading = 'lazy';
         img.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;inset:0;';
+        // Si el thumbnail falla, probamos con "uc?export=view"; si también
+        // falla, mostramos un aviso en vez del ícono roto con el nombre del archivo.
+        img.addEventListener('error', function onErr(){
+          if(!img.dataset.fallback){
+            img.dataset.fallback = '1';
+            img.src = toDriveUcUrl_(file.url);
+          } else {
+            img.removeEventListener('error', onErr);
+            img.remove();
+            const span = document.createElement('span');
+            span.innerHTML = '🖼️<br>No se pudo cargar<br>' + (file.name || '');
+            cell.appendChild(span);
+          }
+        });
         cell.appendChild(img);
       }
       collageGrid.appendChild(cell);
