@@ -12,7 +12,8 @@
     if(!intro) return;
 
     const stage = document.getElementById('envelopeStage');
-    const cta = document.getElementById('envelopeCta');
+    const seal = document.getElementById('envelopeSeal');
+    const hint = document.getElementById('envelopeHint');
     const flap = document.getElementById('envelopeFlap');
     const card = document.getElementById('envelopeCard');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -28,7 +29,7 @@
     function abrirSobre(){
       if(opened) return;
       opened = true;
-      intro.classList.add('opening'); // oculta el botón/CTA
+      intro.classList.add('opening'); // oculta el texto de ayuda
 
       if(reduceMotion){
         finalizar();
@@ -41,8 +42,11 @@
       setTimeout(finalizar, 550 + 750 + 550);     // 4. libera el scroll
     }
 
+    // El sello de lacre es el "botón" principal; el sobre y el texto
+    // de abajo también abren, para que el gesto sea fácil en cualquier punto.
+    seal.addEventListener('click', (e)=>{ e.stopPropagation(); abrirSobre(); });
     stage.addEventListener('click', abrirSobre);
-    cta.addEventListener('click', abrirSobre);
+    hint.addEventListener('click', abrirSobre);
     stage.addEventListener('keydown', (e)=>{
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); abrirSobre(); }
     });
