@@ -380,6 +380,46 @@ input,select,textarea{font-family:inherit;}
   margin-top:4px;
 }
 
+/* Tarjeta destacada de la promo anfitriona dentro de Información clave */
+.info-card--host{
+  grid-column:1 / -1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border-color:var(--pink);
+  background:linear-gradient(160deg, rgba(255,46,203,.14), var(--panel));
+  box-shadow:0 0 26px rgba(255,46,203,.25);
+  padding:22px 16px;
+}
+.info-card--host .info-icon{
+  color:var(--pink-soft);
+  width:34px;height:34px;
+}
+.info-card--host .info-title{
+  font-size:16px;
+}
+.host-hint{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:12.5px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--pink-soft);
+  margin-top:6px;
+  text-shadow:0 0 14px rgba(255,46,203,.5);
+}
+
+.anfi{
+  font-style:normal;
+  background:linear-gradient(90deg,var(--pink),var(--blue));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+
+}
+
 /* ---------- MURO DE RECUERDOS ---------- */
 .featured-card{
   all:unset;
@@ -478,7 +518,32 @@ input,select,textarea{font-family:inherit;}
   color:var(--ink-dim);
   position:relative;
   overflow:hidden;
+  margin:0;padding:6px;
+  cursor:pointer;
+  -webkit-appearance:none;
+  appearance:none;
+  transition:border-color .2s, transform .2s;
 }
+.promo-tile:active{transform:scale(.96);}
+.promo-tile:hover, .promo-tile:focus-visible{border-color:var(--blue);}
+.promo-tile-caption{position:relative;z-index:1;font-size:10px;line-height:1.25;text-align:center;}
+.promo-tile.promo-tile--docentes{
+  border-color:var(--gold);
+  flex-direction:column;
+  gap:4px;
+}
+.promo-tile.promo-tile--docentes span:first-child{font-size:22px;position:relative;z-index:1;}
+.promo-tile.promo-tile--docentes .promo-tile-caption{color:#ffe58a;font-weight:700;}
+.promo-tile.promo-tile--add{
+  border:1.5px dashed var(--pink-soft);
+  background:transparent;
+  color:var(--pink-soft);
+}
+.promo-tile.promo-tile--add:hover, .promo-tile.promo-tile--add:focus-visible{
+  border-color:var(--pink);
+  background:rgba(255,46,203,.08);
+}
+.promo-tile.promo-tile--add::after{content:none;}
 .promo-tile::after{
   content:"";
   position:absolute;inset:0;

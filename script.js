@@ -1,6 +1,78 @@
 (function(){
   "use strict";
 
+  /* =========================================================
+     0. GOOGLE DRIVE (Google Apps Script Web App)
+     ---------------------------------------------------------
+     1. Despliega el archivo Code.gs que te entregamos como
+        Aplicación web (Ejecutar como: yo, Acceso: Cualquier usuario).
+     2. Pega aquí la URL que te da el despliegue.
+        Mientras esta URL no esté configurada, el sitio sigue
+        funcionando con vistas previas locales (como antes),
+        simplemente no persistirán al recargar la página.
+     ========================================================= */
+  const DRIVE_WEBAPP_URL = 'PON_AQUI_TU_URL_DE_APPS_SCRIPT';
+
+  function driveConfigurado_(){
+    return !!DRIVE_WEBAPP_URL && DRIVE_WEBAPP_URL.indexOf('PON_AQUI') === -1;
+  }
+
+  function fileToBase64_(file){
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onload = ()=> resolve(String(reader.result).split(',')[1] || '');
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Sube un archivo a la carpeta de Drive correspondiente a esa promoción.
+  async function uploadToDrive_(file, promoCode){
+    if(!driveConfigurado_()) return null;
+    try{
+      const base64 = await fileToBase64_(file);
+      const fd = new FormData();
+      fd.append('promo', promoCode || 'General');
+      fd.append('filename', file.name);
+      fd.append('mimeType', file.type || 'application/octet-stream');
+      fd.append('base64', base64);
+      // Importante: no fijar Content-Type manualmente, el navegador arma
+      // el boundary multipart automáticamente y así Apps Script no bloquea por CORS.
+      const res = await fetch(DRIVE_WEBAPP_URL, { method:'POST', body: fd });
+      const data = await res.json();
+      return (data && data.ok && data.url) ? data : null;
+    }catch(err){
+      console.warn('No se pudo subir a Drive, se mostrará solo localmente:', err);
+      return null;
+    }
+  }
+
+  // Lee las fotos ya guardadas de una promoción específica.
+  async function fetchDrivePhotos_(promoCode){
+    if(!driveConfigurado_()) return [];
+    try{
+      const res = await fetch(DRIVE_WEBAPP_URL + '?promo=' + encodeURIComponent(promoCode));
+      const data = await res.json();
+      return (data && data.ok && Array.isArray(data.files)) ? data.files : [];
+    }catch(err){
+      console.warn('No se pudieron cargar fotos de Drive:', err);
+      return [];
+    }
+  }
+
+  // Lee la lista de promociones "personalizadas" que la gente ya creó.
+  async function fetchCustomPromos_(){
+    if(!driveConfigurado_()) return [];
+    try{
+      const res = await fetch(DRIVE_WEBAPP_URL + '?listAll=1');
+      const data = await res.json();
+      return (data && data.ok && Array.isArray(data.promos)) ? data.promos : [];
+    }catch(err){
+      console.warn('No se pudo listar promociones personalizadas:', err);
+      return [];
+    }
+  }
+
   /* ---------- reveal on scroll ---------- */
   const revealEls = document.querySelectorAll('.reveal');
   if('IntersectionObserver' in window){
@@ -60,19 +132,96 @@
   partyAudio.addEventListener('pause', ()=> setPlayingUI(false));
   partyAudio.addEventListener('play', ()=> setPlayingUI(true));
 
+  // ---- Autoplay inteligente ----
+  // Intenta reproducir apenas carga la página. Los navegadores casi siempre
+  // bloquean esto sin interacción previa del usuario; si falla, queda
+  // "armado" para arrancar automáticamente en el primer scroll, clic o toque.
+  function intentarAutoplay(){
+    if(!partyAudio.paused) return; // ya está sonando, no hacer nada
+    const p = partyAudio.play();
+    if(p && typeof p.catch === 'function'){
+      p.catch(()=>{ /* el navegador lo bloqueó: se reintentará con la interacción */ });
+    }
+  }
+
+  if(document.readyState === 'complete'){
+    intentarAutoplay();
+  } else {
+    window.addEventListener('load', intentarAutoplay);
+  }
+  ['scroll', 'click', 'touchstart', 'keydown'].forEach((evt)=>{
+    document.addEventListener(evt, intentarAutoplay, { once:true, passive:true });
+  });
+
   /* =========================================================
-     2. MODAL COLLAGE - Muro de Recuerdos (Promo 2000)
+     2. MODAL COLLAGE - funciona para CUALQUIER promoción
      ========================================================= */
-  const mosaicMain = document.getElementById('mosaicMain');
   const collageModal = document.getElementById('collageModal');
+  const collageTitle = document.getElementById('collageTitle');
+  const collageGrid = document.getElementById('collageGrid');
   const collageClose = document.getElementById('collageClose');
   let lastFocusedEl = null;
 
-  function openCollageModal(){
+  // Captions genéricas de respaldo para armar el collage asimétrico
+  // mientras no haya fotos reales subidas a Drive para esa promoción.
+  const COLLAGE_PLACEHOLDERS = [
+    { text:'Foto grupal<br>graduación', size:'big' },
+    { text:'Kermés', size:'' },
+    { text:'Viaje de<br>promoción', size:'tall' },
+    { text:'Última<br>campanada', size:'' },
+    { text:'Equipo de<br>fútbol', size:'' },
+    { text:'Fiesta de<br>graduación', size:'wide' },
+    { text:'Patio del<br>colegio', size:'' }
+  ];
+
+  function renderPlaceholderCollage_(label){
+    collageGrid.innerHTML = '';
+    COLLAGE_PLACEHOLDERS.forEach(item=>{
+      const cell = document.createElement('div');
+      cell.className = 'collage-item' + (item.size ? (' ' + item.size) : '');
+      const span = document.createElement('span');
+      span.innerHTML = item.text + '<br>' + label;
+      cell.appendChild(span);
+      collageGrid.appendChild(cell);
+    });
+  }
+
+  function renderRealCollage_(files){
+    collageGrid.innerHTML = '';
+    files.forEach((file, i)=>{
+      const cell = document.createElement('div');
+      cell.className = 'collage-item' + (i === 0 ? ' big' : (i === 2 ? ' tall' : (i === 5 ? ' wide' : '')));
+      const isVideo = /video/i.test(file.mimeType || '') || /\.(mp4|mov|webm)$/i.test(file.name || '');
+      if(isVideo){
+        const span = document.createElement('span');
+        span.innerHTML = '🎬<br>' + (file.name || 'Video');
+        cell.appendChild(span);
+      } else {
+        const img = document.createElement('img');
+        img.src = file.url;
+        img.alt = file.name || 'Recuerdo';
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;inset:0;';
+        cell.appendChild(img);
+      }
+      collageGrid.appendChild(cell);
+    });
+  }
+
+  async function openCollageModal(promo){
+    // promo = { code, label }
+    collageTitle.textContent = promo.label + ' · Álbum completo';
+    renderPlaceholderCollage_(promo.label); // respuesta inmediata
+
     lastFocusedEl = document.activeElement;
     collageModal.hidden = false;
     document.body.style.overflow = 'hidden';
     collageClose.focus();
+
+    // si hay backend de Drive configurado, reemplaza por las fotos reales
+    const files = await fetchDrivePhotos_(promo.code);
+    if(files.length && !collageModal.hidden){
+      renderRealCollage_(files);
+    }
   }
   function closeCollageModal(){
     collageModal.hidden = true;
@@ -80,15 +229,23 @@
     if(lastFocusedEl) lastFocusedEl.focus();
   }
 
-  mosaicMain.addEventListener('click', openCollageModal);
   collageClose.addEventListener('click', closeCollageModal);
-
   collageModal.addEventListener('click', (e)=>{
     if(e.target === collageModal) closeCollageModal();
   });
   document.addEventListener('keydown', (e)=>{
     if(e.key === 'Escape' && !collageModal.hidden) closeCollageModal();
   });
+
+  // Conecta cualquier mosaico existente (tarjeta destacada + cuadrícula) al modal.
+  function activarMosaico(el){
+    if(!el || el.dataset.collageBound) return;
+    el.dataset.collageBound = '1';
+    el.addEventListener('click', ()=>{
+      openCollageModal({ code: el.getAttribute('data-code'), label: el.getAttribute('data-label') });
+    });
+  }
+  document.querySelectorAll('[data-code]').forEach(activarMosaico);
 
   /* =========================================================
      MURO DE RECUERDOS: subir foto/video (vista previa local)
@@ -124,6 +281,112 @@
 
     promosGrid.appendChild(tile);
     inputRecuerdo.value = '';
+
+    // Persistencia en segundo plano (si Drive está configurado); no bloquea la UI.
+    uploadToDrive_(file, 'General');
+  });
+
+  /* =========================================================
+     2b. NUEVA PROMOCIÓN ("+ ¿Tu promo no está?")
+     ========================================================= */
+  const addPromoTile = document.getElementById('addPromoTile');
+  const addPromoModal = document.getElementById('addPromoModal');
+  const addPromoClose = document.getElementById('addPromoClose');
+  const addPromoForm = document.getElementById('addPromoForm');
+  const newPromoInput = document.getElementById('newPromoInput');
+  const btnNewPromoFile = document.getElementById('btnNewPromoFile');
+  const inputNewPromoFile = document.getElementById('inputNewPromoFile');
+  const previewNewPromoFile = document.getElementById('previewNewPromoFile');
+  const previewNewPromoFileImg = document.getElementById('previewNewPromoFileImg');
+  const previewNewPromoFileName = document.getElementById('previewNewPromoFileName');
+  let newPromoFileSeleccionado = null;
+  let addPromoLastFocused = null;
+
+  function codigoDesdeLabel_(label){
+    // "Promo 1985" -> "1985" · si no hay número, usa el texto tal cual
+    const m = label.match(/\d{2,4}/);
+    return m ? m[0] : label.trim();
+  }
+
+  function crearTilePromo_(code, label){
+    const tile = document.createElement('button');
+    tile.type = 'button';
+    tile.className = 'promo-tile';
+    tile.setAttribute('data-code', code);
+    tile.setAttribute('data-label', label);
+    tile.setAttribute('aria-haspopup', 'dialog');
+    tile.innerHTML = '<span>' + code + '</span>';
+    activarMosaico(tile);
+    promosGrid.insertBefore(tile, addPromoTile);
+    return tile;
+  }
+
+  function openAddPromoModal(){
+    addPromoLastFocused = document.activeElement;
+    addPromoModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    newPromoInput.focus();
+  }
+  function closeAddPromoModal(){
+    addPromoModal.hidden = true;
+    document.body.style.overflow = '';
+    if(addPromoLastFocused) addPromoLastFocused.focus();
+  }
+
+  addPromoTile.addEventListener('click', openAddPromoModal);
+  addPromoClose.addEventListener('click', closeAddPromoModal);
+  addPromoModal.addEventListener('click', (e)=>{
+    if(e.target === addPromoModal) closeAddPromoModal();
+  });
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && !addPromoModal.hidden) closeAddPromoModal();
+  });
+
+  btnNewPromoFile.addEventListener('click', ()=> inputNewPromoFile.click());
+  inputNewPromoFile.addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    newPromoFileSeleccionado = file;
+    if(file.type.startsWith('image/')){
+      previewNewPromoFileImg.src = URL.createObjectURL(file);
+      previewNewPromoFileImg.hidden = false;
+    } else {
+      previewNewPromoFileImg.hidden = true;
+    }
+    previewNewPromoFileName.textContent = file.name;
+    previewNewPromoFile.classList.add('show');
+  });
+
+  addPromoForm.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const label = newPromoInput.value.trim();
+    if(!label) return;
+    const code = codigoDesdeLabel_(label);
+
+    // Evita duplicar una promo que ya existe en la cuadrícula.
+    const yaExiste = promosGrid.querySelector('[data-code="' + CSS.escape(code) + '"]');
+    const tile = yaExiste || crearTilePromo_(code, label);
+
+    if(newPromoFileSeleccionado){
+      await uploadToDrive_(newPromoFileSeleccionado, code);
+    }
+
+    closeAddPromoModal();
+    addPromoForm.reset();
+    previewNewPromoFile.classList.remove('show');
+    newPromoFileSeleccionado = null;
+
+    // Abre de una vez el collage de la promo recién creada.
+    openCollageModal({ code, label });
+  });
+
+  // Carga promociones personalizadas que otros ex-alumnos ya crearon antes (si Drive está configurado).
+  fetchCustomPromos_().then(promos=>{
+    promos.forEach(p=>{
+      if(!promosGrid.querySelector('[data-code="' + CSS.escape(p.code) + '"]')){
+        crearTilePromo_(p.code, p.label);
+      }
+    });
   });
 
   /* =========================================================

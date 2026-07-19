@@ -48,7 +48,7 @@
       <div class="hero-fact"><div class="label">Lugar</div><div class="value">La Riviera</div></div>
       <div class="hero-fact"><div class="label">Hora</div><div class="value">18:00</div></div>
     </div>
-
+ 
     <p class="hero-promo">Organiza <b>Promo 2000</b> — Anfitriones de la noche</p>
     <div class="scroll-cue" aria-hidden="true"></div>
   </header>
@@ -100,10 +100,10 @@
         <div class="info-hint">Formal</div>
       </div>
 
-      <div class="info-card">
+      <div class="info-card info-card--host">
         <svg class="info-icon" viewBox="0 0 24 24" fill="none"><path d="M3 11v2l3 1v5a1 1 0 0 0 1 1h1v-5.4l4 1.4v4h1a1 1 0 0 0 1-1v-5l7-2.3V9L3 11Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
-        <div class="info-title">Promo 2000</div>
-        <div class="info-hint">Anfitriones</div>
+        <div  class="anfi"> <h1> Promo 2000</h1></div>
+        <div class="info-hint host-hint">ANFITRIONES DE LA NOCHE</div>
       </div>
 
     </div>
@@ -117,7 +117,7 @@
     <h2 class="section-title">Muro de <span class="accent">recuerdos</span></h2>
     <p class="section-sub">Toca la tarjeta de Promo 2000 para ver el collage completo. Fotos de época de cada promoción, sube las tuyas y forma parte del muro.</p>
 
-    <button type="button" class="featured-card" id="mosaicMain" aria-haspopup="dialog">
+    <button type="button" class="featured-card" id="mosaicMain" data-code="2000" data-label="Promo 2000" aria-haspopup="dialog">
       <div class="featured-photo"><span aria-hidden="true">2000</span></div>
       <div class="featured-tag">Anfitriones</div>
       <div class="featured-body">
@@ -135,12 +135,20 @@
     <p class="promos-label">Otras promos</p>
     <div class="promos-grid" id="promosGrid">
 
-      <div class="promo-tile"><span>1975</span></div>
-      <div class="promo-tile"><span>1999</span></div>
-      <div class="promo-tile"><span>2002</span></div>
-      <div class="promo-tile"><span>1998</span></div>
-      <div class="promo-tile"><span>2003</span></div>
-      <div class="promo-tile"><span>1997</span></div>
+      <button type="button" class="promo-tile promo-tile--docentes" data-code="docentes" data-label="Plantel Docente" aria-haspopup="dialog">
+        <span aria-hidden="true">🍎</span><span class="promo-tile-caption">Plantel<br>Docente</span>
+      </button>
+
+      <button type="button" class="promo-tile" data-code="1975" data-label="Promo 1975" aria-haspopup="dialog"><span>1975</span></button>
+      <button type="button" class="promo-tile" data-code="1999" data-label="Promo 1999" aria-haspopup="dialog"><span>1999</span></button>
+      <button type="button" class="promo-tile" data-code="2002" data-label="Promo 2002" aria-haspopup="dialog"><span>2002</span></button>
+      <button type="button" class="promo-tile" data-code="1998" data-label="Promo 1998" aria-haspopup="dialog"><span>1998</span></button>
+      <button type="button" class="promo-tile" data-code="2003" data-label="Promo 2003" aria-haspopup="dialog"><span>2003</span></button>
+      <button type="button" class="promo-tile" data-code="1997" data-label="Promo 1997" aria-haspopup="dialog"><span>1997</span></button>
+
+      <button type="button" class="promo-tile promo-tile--add" id="addPromoTile" aria-haspopup="dialog">
+        <span class="promo-tile-caption">+ ¿Tu promo no está?<br>Selecciona tu promo</span>
+      </button>
 
     </div>
   </section>
@@ -270,8 +278,8 @@
   <!-- 7. EL SLAM DEL SAN RAFAEL -->
   <section class="section reveal">
     <p class="eyebrow">Antes de irte</p>
-    <h2 class="section-title">El Slam del <span class="accent">San Rafael</span> 📖</h2>
-    <p class="section-sub">Deja tu firma y tu recuerdo favorito, como en el anuario.</p>
+    <h2 class="section-title">El Muro de recuerdo del <span class="accent">San Rafael</span> 📖</h2>
+    <p class="section-sub">Deja tu firma,mensaje o tu recuerdo favorito.</p>
 
     <form class="slam-form" id="slamForm">
       <div class="field">
@@ -329,7 +337,7 @@
         <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
       </button>
     </div>
-    <div class="collage-grid">
+    <div class="collage-grid" id="collageGrid">
       <div class="collage-item big"><span>Foto grupal<br>graduación</span></div>
       <div class="collage-item"><span>Kermés<br>2000</span></div>
       <div class="collage-item tall"><span>Viaje de<br>promoción</span></div>
@@ -338,6 +346,45 @@
       <div class="collage-item wide"><span>Fiesta de<br>graduación</span></div>
       <div class="collage-item"><span>Patio del<br>colegio</span></div>
     </div>
+  </div>
+</div>
+
+<!-- MODAL: agregar una promoción que no está en la lista -->
+<div class="modal-overlay" id="addPromoModal" role="dialog" aria-modal="true" aria-labelledby="addPromoTitle" hidden>
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h3 id="addPromoTitle">¿Tu promo no está?</h3>
+      <button type="button" class="modal-close" id="addPromoClose" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <form id="addPromoForm">
+      <div class="field">
+        <label for="newPromoInput">Escribe o selecciona tu promoción</label>
+        <input type="text" id="newPromoInput" list="promoSuggestions" placeholder="Ej: Promo 1985" required>
+        <datalist id="promoSuggestions">
+          <option value="Promo 1975"></option>
+          <option value="Promo 1997"></option>
+          <option value="Promo 1998"></option>
+          <option value="Promo 1999"></option>
+          <option value="Promo 2000"></option>
+          <option value="Promo 2002"></option>
+          <option value="Promo 2003"></option>
+        </datalist>
+      </div>
+
+      <button type="button" class="upload-btn blue" id="btnNewPromoFile">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        Subir tu primera foto
+      </button>
+      <input type="file" id="inputNewPromoFile" class="visually-hidden-input" accept="image/*,video/*">
+      <div class="file-preview" id="previewNewPromoFile">
+        <img id="previewNewPromoFileImg" alt="">
+        <span id="previewNewPromoFileName"></span>
+      </div>
+
+      <button type="submit" class="submit-btn" style="margin-top:16px;">Crear espacio de mi promo</button>
+    </form>
   </div>
 </div>
 
