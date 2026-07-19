@@ -11,7 +11,7 @@
         funcionando con vistas previas locales (como antes),
         simplemente no persistirán al recargar la página.
      ========================================================= */
-  const DRIVE_WEBAPP_URL = 'PON_AQUI_TU_URL_DE_APPS_SCRIPT';
+  const DRIVE_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyEP6l6-O2u6UO2JZxDfXMqTMZ-4G2cb08_iGj60AY-jJ0HRC0d6__QbeCR49g_2i_i/exec';
 
   function driveConfigurado_(){
     return !!DRIVE_WEBAPP_URL && DRIVE_WEBAPP_URL.indexOf('PON_AQUI') === -1;
@@ -388,6 +388,7 @@
       }
     });
   });
+
 
   /* =========================================================
      3. CROQUIS DE 47 MESAS - salón La Riviera
