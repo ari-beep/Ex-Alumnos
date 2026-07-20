@@ -417,8 +417,16 @@ input,select,textarea{font-family:inherit;}
   -webkit-background-clip:text;
   background-clip:text;
   color:transparent;
+  font-weight:700;
 
 }
+.grande{
+font-style:normal;
+  background:linear-gradient(90deg,var(--pink),var(--blue));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  }
 
 /* ---------- MURO DE RECUERDOS ---------- */
 .featured-card{
