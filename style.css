@@ -789,26 +789,53 @@ font-style:normal;
   margin-bottom:20px;
 }
 .map-wrap svg{width:100%;height:auto;display:block;}
-.zone{fill:#161a45;stroke:#3a4088;stroke-width:1;opacity:.85;}
+.zone{fill:#161a45;stroke:#3a4088;stroke-width:2.5;opacity:.85;}
 .zone.dim{fill:#12163f;opacity:.6;}
-.zone.pista{fill:#0d1030;stroke:#20e6ff;stroke-width:1;stroke-dasharray:4 4;}
-.zone-text{fill:#9aa0c9;font-family:'Space Grotesk',sans-serif;font-size:8.2px;font-weight:600;letter-spacing:.02em;}
-.zone-text.small{font-size:8px;fill:#6469a0;}
+.zone.pista{fill:#0d1030;stroke:#20e6ff;stroke-width:2.5;stroke-dasharray:12 10;}
+.zone-text{fill:#9aa0c9;font-family:'Space Grotesk',sans-serif;font-size:27px;font-weight:600;letter-spacing:.02em;}
+.zone-text.small{font-size:22px;fill:#6469a0;}
+.zone-text.vertical{font-size:24px;}
+.zone-text.vertical.small{font-size:18px;fill:#6469a0;}
+.entrada-arc{stroke:#3a4088;stroke-width:3;stroke-dasharray:10 8;opacity:.7;}
 
 .table-seat{cursor:pointer;}
-.table-seat .seat-fill{fill:#0d1030;stroke:#20e6ff;stroke-width:1.3;transition:fill .2s, stroke .2s, filter .2s;}
-.table-seat .seat-num{fill:#e7ecff;font-family:'Space Grotesk',sans-serif;font-size:8.5px;font-weight:600;text-anchor:middle;pointer-events:none;}
+.table-seat .seat-fill{fill:#0d1030;stroke:#20e6ff;stroke-width:3;transition:fill .2s, stroke .2s, filter .2s;}
+.table-seat .seat-num{fill:#e7ecff;font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:600;text-anchor:middle;pointer-events:none;}
+.table-seat.rect-h .seat-num{font-size:21px;}
+.table-seat.rect-v .seat-num{font-size:20px;}
+.table-seat.circle .seat-num{font-size:26px;}
 .table-seat.selected .seat-fill{fill:var(--pink);stroke:var(--pink-soft);filter:drop-shadow(0 0 6px rgba(255,46,203,.8));}
 .table-seat.selected .seat-num{fill:#1a0316;}
-.table-seat.reserved{cursor:not-allowed;}
+.table-seat.reserved{cursor:help;}
 .table-seat.reserved .seat-fill{fill:var(--gold);stroke:#8a7300;}
-.table-seat.reserved .seat-num{fill:#2b2200;font-size:7px;}
+.table-seat.reserved .seat-num{fill:#2b2200;font-size:19px;}
 
 .map-legend{display:flex;gap:14px;justify-content:center;margin-top:10px;font-size:10px;color:var(--ink-dim);flex-wrap:wrap;}
 .map-legend span{display:inline-flex;align-items:center;gap:5px;}
 .legend-dot{width:9px;height:9px;border-radius:3px;display:inline-block;background:#0d1030;border:1px solid #20e6ff;}
 .legend-dot.res{background:var(--gold);border-color:#8a7300;}
 .legend-dot.sel{background:var(--pink);border-color:var(--pink-soft);}
+
+.mesa-info-msg{
+  max-width:280px;
+  margin:12px auto 0;
+  padding:0;
+  text-align:center;
+  font-size:12px;
+  color:#2b2200;
+  background:var(--gold);
+  border-radius:10px;
+  font-weight:600;
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  transition:max-height .25s ease, opacity .2s ease, padding .25s ease;
+}
+.mesa-info-msg.show{
+  max-height:60px;
+  opacity:1;
+  padding:9px 12px;
+}
 
 .field{margin-bottom:16px;}
 .field label{

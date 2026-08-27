@@ -646,69 +646,230 @@
 
 
   /* =========================================================
-     3. CROQUIS DE 47 MESAS - salón La Riviera
+     3. CROQUIS DE 51 MESAS - salón La Riviera
      ========================================================= */
+
+  // Mesas reservadas: código de mesa -> { promo } o { org:true } / { docentes:true }
+  // cuando la reserva no corresponde a una promo puntual sino a la organización o al plantel docente.
   const reservedMap = {
-    6:  'P94', 8:  'P87', 17: 'P87', 9:  'P91', 10: 'P99',
-    12: 'P99', 13: 'P99', 11: 'P76', 14: 'P97', 23: 'P97',
-    24: 'P00', 25: 'P00', 26: 'P00', 27: 'P00', 19: 'P02',
+    'ORG': { org: true },
+    '1':   { org: true },
+    '2':   { org: true },
+    '3':   { org: true },
+    '4':   { org: true },
+    '5':   { org: true },
+    '6':   { promo: 'P94' },
+    '7':   { promo: 'P85' },
+    '8':   { promo: 'P87' },
+    '9':   { promo: 'P91' },
+    '10':  { promo: 'P99' },
+    '11':  { promo: 'P76' },
+    '12':  { promo: 'P98' },
+    '13':  { promo: 'P99' },
+    '14':  { promo: 'P97' },
+    '17':  { promo: 'P87' },
+    '18':  { promo: 'P91' },
+    '19':  { promo: 'P02' },
+    '20':  { promo: 'P92' },
+    '21':  { promo: 'P92' },
+    '22':  { promo: 'P01' },
+    '23':  { promo: 'P97' },
+    '26':  { promo: 'P80' },
+    'PROF': { docentes: true }
   };
 
-  const tablePositions = {
-    28:[97,80], 29:[131,80], 30:[183,80], 31:[217,80], 32:[282,80], 33:[316,80],
-    27:[129,132], 26:[163,132], 25:[197,132], 24:[231,132],
-    14:[261,176], 13:[261,199], 12:[261,222], 11:[261,245], 10:[261,268], 9:[261,291], 8:[261,314], 7:[261,337], 6:[261,360],
-    23:[309,176], 22:[309,199], 21:[309,222], 20:[309,245], 19:[309,268], 18:[309,291], 17:[309,314], 16:[309,337], 15:[309,360],
-    34:[390,130], 35:[390,165], 36:[390,200], 37:[390,235], 38:[390,270], 39:[390,305], 40:[390,340],
-    41:[440,130], 42:[440,165], 43:[440,200], 44:[440,235], 45:[440,270], 46:[440,305], 47:[440,340],
-    1:[140,400], 2:[175,400], 3:[210,400], 4:[245,400], 5:[280,400]
+  // Geometría de las 51 mesas dentro del viewBox 0 0 1600 1400, calcada del
+  // plano oficial del salón. Cada mesa define su forma:
+  //  - 'rect-v' : rectángulo vertical alargado (x,y = esquina sup-izq, w, h)
+  //  - 'rect-h' : rectángulo horizontal alargado (x,y = esquina sup-izq, w, h)
+  //  - 'circle' : mesa redonda (x,y = centro, r = radio)
+  const tableGeometry = {
+    // fila de Área Verde (arriba), dentro del recuadro verde
+    32:{x:328,y:160,w:110,h:170,shape:'rect-v'},
+    33:{x:494,y:160,w:110,h:170,shape:'rect-v'},
+    34:{x:660,y:160,w:110,h:170,shape:'rect-v'},
+    35:{x:826,y:160,w:110,h:170,shape:'rect-v'},
+    36:{x:992,y:160,w:110,h:170,shape:'rect-v'},
+
+    // fila bajo Baño Varones, por encima de la pista
+    31:{x:307,y:370,w:90,h:120,shape:'rect-v'},
+    30:{x:411,y:370,w:90,h:120,shape:'rect-v'},
+    29:{x:514,y:370,w:90,h:120,shape:'rect-v'},
+    28:{x:618,y:370,w:90,h:120,shape:'rect-v'},
+    27:{x:722,y:370,w:90,h:120,shape:'rect-v'},
+    26:{x:825,y:370,w:90,h:120,shape:'rect-v'},
+    25:{x:929,y:370,w:90,h:120,shape:'rect-v'},
+    PROF:{x:1033,y:370,w:90,h:120,shape:'rect-v'},
+
+    // columna pegada a la pista, #14 arriba -> #6 abajo (rectángulos horizontales)
+    14:{x:810,y:515,w:140,h:58,shape:'rect-h'},
+    13:{x:810,y:584,w:140,h:58,shape:'rect-h'},
+    12:{x:810,y:653,w:140,h:58,shape:'rect-h'},
+    11:{x:810,y:722,w:140,h:58,shape:'rect-h'},
+    10:{x:810,y:791,w:140,h:58,shape:'rect-h'},
+    9:{x:810,y:860,w:140,h:58,shape:'rect-h'},
+    8:{x:810,y:928,w:140,h:58,shape:'rect-h'},
+    7:{x:810,y:997,w:140,h:58,shape:'rect-h'},
+    6:{x:810,y:1066,w:140,h:58,shape:'rect-h'},
+
+    // columna paralela, #23 arriba -> #15 abajo (rectángulos horizontales; #16 y #15 libres)
+    23:{x:970,y:515,w:150,h:58,shape:'rect-h'},
+    22:{x:970,y:584,w:150,h:58,shape:'rect-h'},
+    21:{x:970,y:653,w:150,h:58,shape:'rect-h'},
+    20:{x:970,y:722,w:150,h:58,shape:'rect-h'},
+    19:{x:970,y:791,w:150,h:58,shape:'rect-h'},
+    18:{x:970,y:860,w:150,h:58,shape:'rect-h'},
+    17:{x:970,y:928,w:150,h:58,shape:'rect-h'},
+    16:{x:970,y:997,w:150,h:58,shape:'rect-h'},
+    15:{x:970,y:1066,w:150,h:58,shape:'rect-h'},
+
+    // mesas redondas junto a la cocina, dos columnas
+    37:{x:1250,y:211,r:42,shape:'circle'},
+    38:{x:1250,y:352,r:42,shape:'circle'},
+    39:{x:1250,y:494,r:42,shape:'circle'},
+    40:{x:1250,y:635,r:42,shape:'circle'},
+    41:{x:1250,y:777,r:42,shape:'circle'},
+    42:{x:1250,y:918,r:42,shape:'circle'},
+    43:{x:1250,y:1059,r:42,shape:'circle'},
+    50:{x:1450,y:211,r:42,shape:'circle'},
+    49:{x:1450,y:352,r:42,shape:'circle'},
+    48:{x:1450,y:494,r:42,shape:'circle'},
+    47:{x:1450,y:635,r:42,shape:'circle'},
+    46:{x:1450,y:777,r:42,shape:'circle'},
+    45:{x:1450,y:918,r:42,shape:'circle'},
+    44:{x:1450,y:1059,r:42,shape:'circle'},
+
+    // fila inferior, encima del arco de la Entrada
+    ORG:{x:500,y:1150,w:80,h:110,shape:'rect-v'},
+    1:{x:600,y:1150,w:80,h:110,shape:'rect-v'},
+    2:{x:700,y:1150,w:80,h:110,shape:'rect-v'},
+    3:{x:800,y:1150,w:80,h:110,shape:'rect-v'},
+    4:{x:900,y:1150,w:80,h:110,shape:'rect-v'},
+    5:{x:1000,y:1150,w:80,h:110,shape:'rect-v'}
   };
 
-  const croquis = document.getElementById('croquis');
   const tablesLayer = document.getElementById('tablesLayer');
   const mesaInput = document.getElementById('mesaSeleccionada');
+  const mesaInfoMsg = document.getElementById('mesaInfoMsg');
   let selectedTable = null;
+  let mesaInfoTimeout = null;
 
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
-  Object.keys(tablePositions).forEach((key)=>{
-    const num = parseInt(key, 10);
-    const [px, py] = tablePositions[key];
-    const isReserved = Object.prototype.hasOwnProperty.call(reservedMap, num);
+  // "P80" -> "Promo 80" (respeta el código tal cual, sin inventar el año completo)
+  function promoDisplay_(codigo){
+    return 'Promo ' + codigo.replace(/^P/i, '');
+  }
+
+  function mostrarInfoMesa_(texto){
+    if(mesaInfoTimeout) clearTimeout(mesaInfoTimeout);
+    mesaInfoMsg.textContent = texto;
+    mesaInfoMsg.classList.add('show');
+    mesaInfoTimeout = setTimeout(()=> mesaInfoMsg.classList.remove('show'), 4000);
+  }
+
+  Object.keys(tableGeometry).forEach((key)=>{
+    const geo = tableGeometry[key];
+    const info = reservedMap[key];
+    const isReserved = !!info;
+    const isCircle = geo.shape === 'circle';
+    const cx = isCircle ? geo.x : geo.x + geo.w / 2;
+    const cy = isCircle ? geo.y : geo.y + geo.h / 2;
 
     const g = document.createElementNS(SVG_NS, 'g');
-    g.setAttribute('class', 'table-seat' + (isReserved ? ' reserved' : ''));
-    g.setAttribute('data-table', num);
-    if(isReserved) g.setAttribute('data-promo', reservedMap[num]);
-    g.setAttribute('tabindex', isReserved ? '-1' : '0');
+    g.setAttribute('class', 'table-seat ' + geo.shape + (isReserved ? ' reserved' : ''));
+    g.setAttribute('data-table', key);
     g.setAttribute('role', 'button');
+    g.setAttribute('tabindex', '0');
     g.setAttribute('aria-disabled', isReserved ? 'true' : 'false');
-    g.setAttribute('aria-label', isReserved ? ('Mesa ' + num + ', reservada por ' + reservedMap[num]) : ('Mesa ' + num + ', libre'));
 
-    const circle = document.createElementNS(SVG_NS, 'circle');
-    circle.setAttribute('class', 'seat-fill');
-    circle.setAttribute('cx', px);
-    circle.setAttribute('cy', py);
-    circle.setAttribute('r', isReserved ? 12 : 11);
-    g.appendChild(circle);
+    // Líneas de texto mostradas dentro de la mesa y mensaje al tocarla.
+    let lines, infoTexto, ariaLabel, rotate = false;
+    if(!isReserved){
+      lines = [String(key)];
+      ariaLabel = 'Mesa ' + key + ', libre';
+    } else if(info.org){
+      if(key === 'ORG'){
+        lines = ['ORGANIZACIÓN'];
+        rotate = true;
+        infoTexto = 'Mesa de Organización — reservada para el equipo organizador.';
+      } else {
+        lines = [String(key)];
+        infoTexto = 'Mesa ' + key + ' reservada para la Organización.';
+      }
+      ariaLabel = infoTexto;
+    } else if(info.docentes){
+      lines = ['PROFESORES'];
+      rotate = true;
+      infoTexto = 'Mesa de Profesores — reservada para el Plantel Docente.';
+      ariaLabel = infoTexto;
+    } else {
+      // Rectángulo horizontal: cabe en una sola línea. Vertical: dos líneas.
+      lines = geo.shape === 'rect-h' ? ['#' + key + '-' + info.promo] : ['#' + key, info.promo];
+      infoTexto = 'Mesa #' + key + ' reservada por ' + promoDisplay_(info.promo) + '.';
+      ariaLabel = infoTexto;
+    }
+    g.setAttribute('aria-label', ariaLabel);
+    if(info && info.promo) g.setAttribute('data-promo', info.promo);
+
+    if(isCircle){
+      const circle = document.createElementNS(SVG_NS, 'circle');
+      circle.setAttribute('class', 'seat-fill');
+      circle.setAttribute('cx', cx);
+      circle.setAttribute('cy', cy);
+      circle.setAttribute('r', geo.r);
+      g.appendChild(circle);
+    } else {
+      const rect = document.createElementNS(SVG_NS, 'rect');
+      rect.setAttribute('class', 'seat-fill');
+      rect.setAttribute('x', geo.x);
+      rect.setAttribute('y', geo.y);
+      rect.setAttribute('width', geo.w);
+      rect.setAttribute('height', geo.h);
+      rect.setAttribute('rx', 10);
+      g.appendChild(rect);
+    }
 
     const text = document.createElementNS(SVG_NS, 'text');
     text.setAttribute('class', 'seat-num');
-    text.setAttribute('x', px);
-    text.setAttribute('y', py + 3);
-    text.textContent = isReserved ? (num + '·' + reservedMap[num]) : num;
+    text.setAttribute('x', cx);
+    if(rotate){
+      text.setAttribute('transform', 'rotate(-90 ' + cx + ' ' + cy + ')');
+      text.style.fontSize = '14px';
+    }
+    if(lines.length === 1){
+      text.setAttribute('y', cy + 4);
+      text.textContent = lines[0];
+    } else {
+      lines.forEach((line, i)=>{
+        const tspan = document.createElementNS(SVG_NS, 'tspan');
+        tspan.setAttribute('x', cx);
+        tspan.setAttribute('dy', i === 0 ? '-0.15em' : '1.15em');
+        tspan.textContent = line;
+        text.appendChild(tspan);
+      });
+      // Centrar el bloque de 2 líneas verticalmente respecto a cy
+      text.setAttribute('y', cy);
+    }
     g.appendChild(text);
 
     if(!isReserved){
+      // Mesa libre: seleccionable, llena el campo del formulario.
       function selectTable(){
         if(selectedTable) selectedTable.classList.remove('selected');
         g.classList.add('selected');
         selectedTable = g;
-        mesaInput.value = 'Mesa ' + num;
+        mesaInput.value = 'Mesa ' + key;
       }
       g.addEventListener('click', selectTable);
       g.addEventListener('keydown', (ev)=>{
         if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); selectTable(); }
+      });
+    } else {
+      // Mesa reservada: no se puede elegir, solo muestra quién la reservó.
+      g.addEventListener('click', ()=> mostrarInfoMesa_(infoTexto));
+      g.addEventListener('keydown', (ev)=>{
+        if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); mostrarInfoMesa_(infoTexto); }
       });
     }
     tablesLayer.appendChild(g);

@@ -245,38 +245,42 @@
   <section class="section reveal">
     <p class="eyebrow">Último paso</p>
     <h2 class="section-title">Confirma tu <span class="accent">reserva y mesa</span></h2>
-    <p class="section-sub">Toca una mesa libre en el croquis para elegirla. Las mesas en amarillo ya están reservadas por otras promos.</p>
+    <p class="section-sub">Toca una mesa libre en el croquis para elegirla. Las mesas en amarillo ya están reservadas — tócalas para ver qué promo las reservó.</p>
 
     <div class="map-wrap">
-      <svg id="croquis" viewBox="0 0 480 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Croquis del salón La Riviera con 47 mesas">
+      <svg id="croquis" viewBox="0 0 1600 1400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Croquis del salón La Riviera con 51 mesas">
         <!-- zonas fijas -->
-        <rect class="zone" x="10" y="10" width="70" height="70" rx="6"/>
-        <text class="zone-text" x="45" y="42" text-anchor="middle"><tspan x="45" dy="0">SALIDA</tspan><tspan x="45" dy="12">CICLOVÍA</tspan></text>
+        <rect class="zone" x="20" y="20" width="190" height="330" rx="12"/>
+        <text class="zone-text" x="115" y="175" text-anchor="middle"><tspan x="115" dy="0">SALIDA</tspan><tspan x="115" dy="26">CICLOVÍA</tspan></text>
 
-        <rect class="zone" x="85" y="10" width="255" height="45" rx="6"/>
-        <text class="zone-text" x="212" y="36" text-anchor="middle">ÁREA VERDE</text>
+        <rect class="zone" x="300" y="20" width="830" height="110" rx="12"/>
+        <text class="zone-text" x="715" y="82" text-anchor="middle">ÁREA VERDE</text>
 
-        <rect class="zone" x="360" y="10" width="110" height="45" rx="6"/>
-        <text class="zone-text" x="415" y="36" text-anchor="middle">COCINA</text>
+        <rect class="zone" x="1140" y="20" width="420" height="110" rx="12"/>
+        <text class="zone-text" x="1350" y="82" text-anchor="middle">COCINA</text>
 
-        <rect class="zone" x="10" y="110" width="70" height="35" rx="6"/>
-        <text class="zone-text" x="45" y="124" text-anchor="middle"><tspan x="45" dy="0">BAÑO</tspan><tspan x="45" dy="11">VARONES</tspan></text>
+        <!-- contenedor de las mesas #32-#36, dentro del área verde -->
+        <rect class="zone" x="300" y="140" width="830" height="210" rx="12"/>
 
-        <rect class="zone dim" x="10" y="150" width="55" height="215" rx="6"/>
-        <text class="zone-text vertical" x="37" y="257" text-anchor="middle" transform="rotate(-90 37 257)">ESCENARIO</text>
+        <rect class="zone" x="20" y="360" width="190" height="140" rx="12"/>
+        <text class="zone-text" x="115" y="422" text-anchor="middle"><tspan x="115" dy="0">BAÑO</tspan><tspan x="115" dy="26">VARONES</tspan></text>
 
-        <rect class="zone dim" x="70" y="150" width="15" height="215" rx="3"/>
+        <rect class="zone dim" x="20" y="510" width="190" height="620" rx="12"/>
+        <text class="zone-text vertical" x="115" y="820" text-anchor="middle" transform="rotate(-90 115 820)">ESCENARIO</text>
 
-        <rect class="zone pista" x="90" y="150" width="160" height="215" rx="8"/>
-        <text class="zone-text" x="170" y="254" text-anchor="middle"><tspan x="170" dy="0">PISTA DE</tspan><tspan x="170" dy="13">BAILE</tspan></text>
+        <rect class="zone dim" x="220" y="510" width="70" height="620" rx="8"/>
+        <text class="zone-text vertical small" x="255" y="820" text-anchor="middle" transform="rotate(-90 255 820)">TARIMA</text>
 
-        <rect class="zone" x="10" y="385" width="70" height="35" rx="6"/>
-        <text class="zone-text" x="45" y="399" text-anchor="middle"><tspan x="45" dy="0">BAÑO</tspan><tspan x="45" dy="11">MUJERES</tspan></text>
+        <rect class="zone pista" x="300" y="510" width="500" height="620" rx="16"/>
+        <text class="zone-text" x="550" y="800" text-anchor="middle"><tspan x="550" dy="0">PISTA DE</tspan><tspan x="550" dy="32">BAILE</tspan></text>
 
-        <text class="zone-text small" x="150" y="440" text-anchor="middle">SALIDA</text>
-        <text class="zone-text small" x="330" y="440" text-anchor="middle">ENTRADA</text>
+        <rect class="zone" x="20" y="1140" width="190" height="130" rx="12"/>
+        <text class="zone-text" x="115" y="1200" text-anchor="middle"><tspan x="115" dy="0">BAÑO</tspan><tspan x="115" dy="26">MUJERES</tspan></text>
 
-        <!-- las 47 mesas se generan dinámicamente desde script.js -->
+        <path class="entrada-arc" d="M 600 1290 A 200 90 0 0 0 980 1290" fill="none"/>
+        <text class="zone-text small" x="790" y="1335" text-anchor="middle">ENTRADA</text>
+
+        <!-- las 51 mesas se generan dinámicamente desde script.js -->
         <g id="tablesLayer"></g>
       </svg>
       <div class="map-legend">
@@ -284,6 +288,7 @@
         <span><i class="legend-dot res"></i> Reservada</span>
         <span><i class="legend-dot sel"></i> Tu mesa</span>
       </div>
+      <p class="mesa-info-msg" id="mesaInfoMsg"></p>
     </div>
 
     <form id="reservaForm" enctype="multipart/form-data">
