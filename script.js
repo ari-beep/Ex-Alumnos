@@ -652,7 +652,6 @@
   // Mesas reservadas: código de mesa -> { promo } o { org:true } / { docentes:true }
   // cuando la reserva no corresponde a una promo puntual sino a la organización o al plantel docente.
   const reservedMap = {
-<<<<<<< HEAD
     'ORG': { org: true },
     '1':   { org: true },
     '2':   { org: true },
@@ -677,11 +676,6 @@
     '23':  { promo: 'P97' },
     '26':  { promo: 'P80' },
     'PROF': { docentes: true }
-=======
-    6:  'P94', 8:  'P87', 17: 'P87', 9:  'P91', 10: 'P99',
-    12: 'P98', 13: 'P99', 11: 'P76', 14: 'P97', 23: 'P97',
-    19: 'P02', 1: 'P00', 2: 'P00', 3: 'P00', 4: 'P00', 5: 'P00',
->>>>>>> 454f3e4ea9f9f36c93518646c7d8374434b32222
   };
 
   // Geometría de las 51 mesas dentro del viewBox 0 0 1600 1400, calcada del
